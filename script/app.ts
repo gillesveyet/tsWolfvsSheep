@@ -4,7 +4,7 @@
 /// <reference path="Solver.ts" />
 /// <reference path="Bench.ts" />
 /// <reference path="CheckerPanel.ts" />
-/// <reference path="..\lib\http_github.com_borisyankov_DefinitelyTyped_raw_master_jquery_jquery.d.ts" />
+/// <reference path="..\typings\jquery.d.ts" />
 
 // With Visual Studio, you can add an _references.ts file to the project. This file will be the first passed to the compiler, allowing to control over the order the generated.js file
 // when used in combination with the Combine JavaScript output into file option.
