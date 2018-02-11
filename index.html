@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Wolf and Sheep</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Game of Wolf and Sheep">
+    <meta name="author" content="Gilles Veyet">
+    <link rel="shortcut icon" href="media/favicon32x32.ico">
+    <link rel="stylesheet" href="css/app.css" type="text/css">
+</head>
+<body>
+<div class="container">
+    <h2>Wolf and Sheep</h2>
+
+    <div class="menu">
+        <div id="menu_play">
+            <button id="play_sheep">Play Sheep</button>
+            <button id="play_wolf">Play Wolf</button>
+        </div>
+
+        <div id="menu_game">
+            <button id="game_back">Move Back</button>
+            <button id="game_new">New Game</button>
+        </div>
+
+        <div id="menu_depth">
+            <div>Wolf Depth: <input type="text" id="wolf_depth"></div>
+            <div>Sheep Depth: <input type="text" id="sheep_depth"></div>
+        </div>
+        <div id="menu_bench">
+            <!-- <button id="test">Test</button> -->
+            <button id="bench">Benchmark</button>
+        </div>
+    </div>
+
+
+    <canvas id="can" width="600" height="600"></canvas>
+    <div id="status"></div>
+    <div id="dbg"></div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

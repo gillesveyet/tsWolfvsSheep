@@ -1,0 +1,47 @@
+
+canvas {
+    border: 1px solid black;
+    /*
+    background-image: url("../media/Checker.png");
+    */
+    background-size: contain;
+}
+
+button {
+    margin: 5px;
+    font-size: 100%;
+}
+
+body {
+    background-color: #eee6e6
+}
+
+@media only screen and (min-width: 610px) {
+    .container {
+        max-width: 610px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu {
+    display: flex;
+    flex-direction: row;
+}
+
+.menu > div {
+    display: flex;
+}
+
+#menu_depth {
+    flex-direction: column;
+}
+
+#menu_bench, #menu_depth, #dbg {
+    display: none;
+}
