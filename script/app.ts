@@ -26,6 +26,8 @@ enum PlayerMode {
     TwoPlayers = 3, // not yet implemented
 }
 
+const DEFAULT_DEPTH = 16;
+
 class Game {
     checker: CheckerPanel;
     gameHistory: GameState[] = [];
@@ -33,19 +35,19 @@ class Game {
     playerMode: PlayerMode;
 
     getWolfDepth(): number {
-        var d = parseInt((<HTMLInputElement> document.getElementById("wolf_depth")).value);
+        let d = parseInt((<HTMLInputElement> document.getElementById("wolf_depth")).value);
 
         if (isNaN(d) || d <= 0)
-            return 14;
+            return DEFAULT_DEPTH;
         else
             return d;
     }
 
     getSheepDepth(): number {
-        var d = parseInt((<HTMLInputElement> document.getElementById("sheep_depth")).value);
+        let d = parseInt((<HTMLInputElement> document.getElementById("sheep_depth")).value);
 
         if (isNaN(d) || d <= 0)
-            return 14;
+            return DEFAULT_DEPTH;
         else
             return d;
     }
@@ -60,7 +62,7 @@ class Game {
 
     resetGame() {
         this.gameHistory = [];
-        //var gs = GameState.GetInitialGameState()
+        //let gs = GameState.GetInitialGameState()
         //this.addGS(gs);
 
         this.checker.SetPositions(null, false);
@@ -82,14 +84,14 @@ class Game {
     }
 
     public run(): void {
-        var wolfDepth = parseInt(Params["wolf"]);
-        var sheepDepth = parseInt(Params["sheep"]);
+        let wolfDepth = parseInt(Params["wolf"]);
+        let sheepDepth = parseInt(Params["sheep"]);
 
         if (isNaN(wolfDepth) || wolfDepth <= 0)
-            wolfDepth = 14;
+            wolfDepth = DEFAULT_DEPTH;
 
         if (!isNaN(sheepDepth) || sheepDepth <= 0)
-            sheepDepth = 14;
+            sheepDepth = DEFAULT_DEPTH;
 
         (<HTMLInputElement> document.getElementById("wolf_depth")).value = wolfDepth.toString();
         (<HTMLInputElement> document.getElementById("sheep_depth")).value = wolfDepth.toString();
@@ -97,7 +99,7 @@ class Game {
         //window.document.title = Helper.StringFormat( "Loup et les Agneaux - wolf:{0} sheep:{1}", wolfDepth, sheepDepth);
 
         if (Params["bench"] !== undefined) {
-            var win = window.open("", "Benchmark");
+            let win = window.open("", "Benchmark");
 
             Bench.Run(wolfDepth, sheepDepth, win);
             return;
@@ -137,7 +139,7 @@ class Game {
             //from http://en.nisi.ro/blog/development/javascript/open-new-window-window-open-seen-chrome-popup/
             //Open the window just after onClick event so that Chrome consider that it is not a popup (which are blocked by default on Chrome)
             //Chrome Settings / Advanced Settings / Content Settings : Do not allow any site to show popups - Manage exceptions
-            var win = window.open("", "Benchmark");
+            let win = window.open("", "Benchmark");
             this.ready = false;
             Bench.Run(this.getWolfDepth(), this.getSheepDepth(), win);
             this.ready = true;
@@ -188,7 +190,7 @@ class Game {
         };
 
         this.checker.onMovePiece = (oldPos: Pos, newPos: Pos) => {
-            var gs = this.getGS().makePlayerMove(oldPos, newPos);
+            let gs = this.getGS().makePlayerMove(oldPos, newPos);
             this.addGS(gs);
             this.checker.SetPositions(gs, false);
 
@@ -204,7 +206,7 @@ class Game {
         $("#menu_game").show();
         $("#menu_play").hide();
 
-        var gs = GameState.GetInitialGameState()
+        let gs = GameState.GetInitialGameState()
         this.addGS(gs);
 
         this.checker.SetPositions(gs, this.playerMode !== PlayerMode.PlaySheep);
@@ -215,11 +217,11 @@ class Game {
     }
 
     updateContext(): void {
-        var gs = this.getGS();
+        let gs = this.getGS();
 
         this.displayInfo(gs);
 
-        var initial = gs !== null && gs.nbMoves < 2;
+        let initial = gs !== null && gs.nbMoves < 2;
 
         (<HTMLInputElement> document.getElementById("game_back")).disabled = !(!initial && (this.playerMode !== PlayerMode.TwoPlayers || IsExpertMode));
 
@@ -240,7 +242,7 @@ class Game {
 
 
     showVictory(gs: GameState): void {
-        var msg: string;
+        let msg: string;
 
         if (this.playerMode !== PlayerMode.TwoPlayers) {
             if ((gs.status === GameStatus.WolfWon) === (this.playerMode === PlayerMode.PlayWolf))
@@ -261,8 +263,8 @@ class Game {
     }
 
     cpuPlay(enable: boolean) {
-        var solver = new Solver();
-        var gs = solver.play(this.getGS(), this.getGS().isWolf ? this.getWolfDepth() : this.getSheepDepth());
+        let solver = new Solver();
+        let gs = solver.play(this.getGS(), this.getGS().isWolf ? this.getWolfDepth() : this.getSheepDepth());
         this.addGS(gs);
 
         this.displayDebug(solver.statusString);

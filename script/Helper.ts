@@ -32,7 +32,7 @@ class Helper
 
 	public static StringFormatArgs(fmt: string, args: any[]): string
 	{
-		for (var i = 0; i < args.length; i++)
+		for (let i = 0; i < args.length; i++)
 		{
 			var regexp = new RegExp('\\{' + i + '\\}', 'gi');
 			fmt = fmt.replace(regexp, args[i]);

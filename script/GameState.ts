@@ -24,7 +24,7 @@ class GameState
 
 	private static InitDictWolf()
 	{
-		var patterns: string[] = [
+		let patterns: string[] = [
 			//Size: 1
 
 			" X " + '!' +
@@ -412,25 +412,25 @@ class GameState
 		];
 
 
-		for (var ip = 0; ip < patterns.length; ++ip)
+		for (let ip = 0; ip < patterns.length; ++ip)
 		{
-			var pattern = patterns[ip];
-			var rows = pattern.split("!");
-			var nbCol = rows[0].length;
-			var nbRow = rows.length;
-			var shift = nbRow * 2 - 1 - nbCol;
-			var wx = (nbCol - shift - 1) / 2;
-			var row = rows[0];
-			var offset = (nbRow - shift + 1) % 2;
-			var hash1 = 0;
-			var hash2 = 0;
+			let pattern = patterns[ip];
+			let rows = pattern.split("!");
+			let nbCol = rows[0].length;
+			let nbRow = rows.length;
+			let shift = nbRow * 2 - 1 - nbCol;
+			let wx = (nbCol - shift - 1) / 2;
+			let row = rows[0];
+			let offset = (nbRow - shift + 1) % 2;
+			let hash1 = 0;
+			let hash2 = 0;
 
 			if (nbRow < 2 || nbRow > 5 || shift < 0 || row[wx] !== "X")
 				throw "Invalid pattern: " + pattern;
 
-			for (var i = 0; i < nbCol; ++i)
+			for (let i = 0; i < nbCol; ++i)
 			{
-				var c = row[i];
+				let c = row[i];
 				if (i !== wx)
 				{
 					if (i % 2 === offset)
@@ -446,7 +446,7 @@ class GameState
 				}
 			}
 
-			for (var dy = 1; dy < nbRow; ++dy)
+			for (let dy = 1; dy < nbRow; ++dy)
 			{
 				row = rows[dy];
 
@@ -455,15 +455,15 @@ class GameState
 
 				offset = (nbRow - shift + dy + 1) % 2;
 
-				for (var i = 0; i < nbCol; ++i)
+				for (let i = 0; i < nbCol; ++i)
 				{
-					var c = row[i];
+					let c = row[i];
 
 					if (i % 2 === offset)
 					{
 						if (c === "O")
 						{
-							var dx = ((i - wx + dy) / 2) | 0;		// optimization : use integer
+							let dx = ((i - wx + dy) / 2) | 0;		// optimization : use integer
 							hash1 += 1 << dx + dy * 5 - 5;
 							hash2 += 1 << dy - dx + dy * 5 - 5;		// symmetry ( left <-> right)
 						}
@@ -481,7 +481,7 @@ class GameState
 			if (hash1 === 0)
 				throw "Invalid pattern: " + pattern;
 
-			var alt = hash1 !== hash2;
+			let alt = hash1 !== hash2;
 
 			if (shift !== 0)
 			{
@@ -503,7 +503,7 @@ class GameState
 
 	static GetInitialGameState()
 	{
-		var gs = new GameState(0, Pos.GetPos(5, 0), [Pos.GetPos(0, 9), Pos.GetPos(2, 9), Pos.GetPos(4, 9), Pos.GetPos(6, 9), Pos.GetPos(8, 9)]);
+		let gs = new GameState(0, Pos.GetPos(5, 0), [Pos.GetPos(0, 9), Pos.GetPos(2, 9), Pos.GetPos(4, 9), Pos.GetPos(6, 9), Pos.GetPos(8, 9)]);
 		gs.status = GameStatus.NotFinished;
 		return gs;
 	}
@@ -536,9 +536,9 @@ class GameState
 	//	if (!wolf.isValid)
 	//		throw "Invalid starting state (invalid wolf position)";
 
-	//	for (var i = 0; i < sheep.length; ++i)
+	//	for (let i = 0; i < sheep.length; ++i)
 	//	{
-	//		var p = sheep[i];
+	//		let p = sheep[i];
 
 	//		if (!p.isValid)
 	//			throw "Invalid starting state : invalid sheep position " + p.toString();
@@ -549,11 +549,11 @@ class GameState
 
 	//	sheep.sort((a: Pos, b: Pos) => { return a.pval - b.pval; });
 
-	//	for (var i = 0; i < this.NB_SHEEP - 1; ++i)
+	//	for (let i = 0; i < this.NB_SHEEP - 1; ++i)
 	//		if (sheep[i] === sheep[i + 1])
 	//			throw "Invalid starting state : several sheep at same position " + sheep[i].toString();
 
-	//	var gs = new GameState(nbMoves, wolf, sheep);
+	//	let gs = new GameState(nbMoves, wolf, sheep);
 	//	gs.checkStatus();
 
 	//	return gs;
@@ -566,15 +566,13 @@ class GameState
 
 	private makeNewGameStateSheep(olds: Pos, news: Pos): GameState
 	{
-		var newSheep: Pos[] = [];
-		var shift = false;
-		var newspval = news.pval;
-		var z = 0;
+		let newSheep: Pos[] = [];
+		let shift = false;
+		let newspval = news.pval;
+		let z = 0;
 
-		for (var i = 0; i < GameState.NB_SHEEP; ++i)
+		for (let p of this.sheep)
 		{
-			var p = this.sheep[i]
-
 			if (p === olds)
 			{
 				shift = true;
@@ -604,7 +602,7 @@ class GameState
 
 	public makePlayerMove(oldp: Pos, newp: Pos): GameState
 	{
-		var gs: GameState;
+		let gs: GameState;
 
 		if (this.isWolf)
 			gs = this.makeNewGameStateWolf(newp);
@@ -626,7 +624,7 @@ class GameState
 		if (this.wolfHasWon())
 			return GameStatus.WolfWon;
 
-		var list = this.play();
+		let list = this.play();
 		if (list.length === 0)
 			return this.isWolf ? GameStatus.SheepWon : GameStatus.WolfWon;
 
@@ -643,18 +641,16 @@ class GameState
 
 	private getValidWolfMoves(): Pos[]
 	{
-		var list: Pos[] = [];
-		var moves = this.wolf.getWolfMoves();
-		var i = 0;
+		let list: Pos[] = [];
+		let moves = this.wolf.getWolfMoves();
 
-		for (var i = 0; i < moves.length; ++i)
+		for (let p of moves)
 		{
-			var p = moves[i];
-			var ok = true;
+			let ok = true;
 
-			for (var j = 0; j < this.sheep.length; ++j)
+			for (let j = 0; j < this.sheep.length; ++j)
 			{
-				var s = this.sheep[j];
+				let s = this.sheep[j];
 
 				if (p === s)
 				{
@@ -672,21 +668,19 @@ class GameState
 
 	private getValidSheepMoves(selected: Pos): Pos[]
 	{
-		var list: Pos[] = [];
-		var moves = selected.getSheepMoves();
+		let list: Pos[] = [];
+		let moves = selected.getSheepMoves();
 
-		for (var i = 0; i < moves.length; ++i)
+		for (let p of moves)
 		{
-			var p = moves[i];
-
 			if (p === this.wolf)
 				continue;
 
-			var ok = true;
+			let ok = true;
 
-			for (var j = 0; j < this.sheep.length; ++j)
+			for (let j = 0; j < this.sheep.length; ++j)
 			{
-				var s = this.sheep[j];
+				let s = this.sheep[j];
 
 				if (p === s)
 				{
@@ -713,25 +707,24 @@ class GameState
 		if (this.wolfHasWon())
 			return true;
 
-		var wy = this.wolf.y;
+		let wy = this.wolf.y;
 
 		if (this.sheep[0].y - wy > 4)	// if lowest sheep is more than 4 row below wolf : skip test
 			return false;
 
-		var wx = this.wolf.x;
+		let wx = this.wolf.x;
 
-		var hash = 0;
-		var dyMax = 0;
+		let hash = 0;
+		let dyMax = 0;
 
-		for (var i = 0; i < this.sheep.length; ++i)
+		for (let p of  this.sheep)
 		{
-			var p = this.sheep[i];
-			var dy = p.y - wy;
+			let dy = p.y - wy;
 
 			if (dy <= 0)
 				break;		// sheep is same row or above wolf : break is OK because remaining sheep are same or above.
 
-			var dx = ((p.x - wx + dy) / 2) | 0;	// optimization "| 0" is only here to tell browser that dx is an integer. integer div is faster than float div and also integer allocation is faster than float.  
+			let dx = ((p.x - wx + dy) / 2) | 0;	// optimization "| 0" is only here to tell browser that dx is an integer. integer div is faster than float div and also integer allocation is faster than float.  
 
 			if (dx < 0 || dx > dy)
 				continue;
@@ -755,17 +748,17 @@ class GameState
 
 	public play(): GameState[]
 	{
-		var S0 = this.sheep[0];
-		var S1 = this.sheep[1];
-		var S2 = this.sheep[2];
-		var S3 = this.sheep[3];
-		var S4 = this.sheep[4];
+		let S0 = this.sheep[0];
+		let S1 = this.sheep[1];
+		let S2 = this.sheep[2];
+		let S3 = this.sheep[3];
+		let S4 = this.sheep[4];
 
-		var i, j;
-		var p: Pos;
-		var moves: Pos[];
-		var list: GameState[] = [];
-		var z = 0;
+		let i, j;
+		let p: Pos;
+		let moves: Pos[];
+		let list: GameState[] = [];
+		let z = 0;
 
 		if (this.isWolf)
 		{
@@ -782,13 +775,13 @@ class GameState
 		else
 		{
 
-			var wx = this.wolf.x;
+			let wx = this.wolf.x;
 
 			for (i = 0; i < this.sheep.length; ++i)
 			{
-				var olds = this.sheep[i];
-				var x = olds.x;
-				var y = olds.y;
+				let olds = this.sheep[i];
+				let x = olds.x;
+				let y = olds.y;
 
 				if (y === 0)
 					continue;
@@ -815,9 +808,9 @@ class GameState
 
 			for (i = 0; i < this.sheep.length; ++i)
 			{
-				var olds = this.sheep[i];
-				var x = olds.x;
-				var y = olds.y;
+				let olds = this.sheep[i];
+				let x = olds.x;
+				let y = olds.y;
 
 				if (y === 0)
 					continue;

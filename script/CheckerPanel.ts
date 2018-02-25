@@ -102,7 +102,7 @@ class CheckerPanel
 		if (window.innerWidth < 100 || window.innerHeight < 100)	// do nothing if size of too small or invalid. Note, on my Atrix, I sometimes have innerWidth=0 and innerHeight=0
 			return;
 
-		var siz = ((Math.min(window.innerWidth, window.innerHeight) - 10) / 10 | 0) * 10;
+		let siz = ((Math.min(window.innerWidth, window.innerHeight) - 10) / 10 | 0) * 10;
 
 		console.log(Helper.StringFormat("Resize Canvas:{0}", siz));
 
@@ -128,14 +128,14 @@ class CheckerPanel
     // old wait layer : centered
 	ShowWaitLayer()
 	{
-		var text = "Wait...";
-		var fontSize = this.canvas.height / 8;
+		let text = "Wait...";
+		let fontSize = this.canvas.height / 8;
 
 		this.ctx.font = fontSize + "px Verdana";
-		var width = this.ctx.measureText(text).width;
+		let width = this.ctx.measureText(text).width;
 
-		var x = (this.canvas.width - width) / 2;
-		var y = (this.canvas.height-fontSize) / 2;
+		let x = (this.canvas.width - width) / 2;
+		let y = (this.canvas.height-fontSize) / 2;
 
 		this.ctx.fillStyle = "rgba(160, 160, 160, 0.85)";
 		this.ctx.fillRect(x - fontSize/2, y- fontSize/2.5, width + fontSize, fontSize*2);
@@ -149,11 +149,11 @@ class CheckerPanel
     // new wait layer: bottom left
     ShowWaitLayer()
     {
-        var text = "Please wait...";
-        var fontSize = this.canvas.height / 20;
+        let text = "Please wait...";
+        let fontSize = this.canvas.height / 20;
 
         this.ctx.font = fontSize + "px Verdana";
-        var width = this.ctx.measureText(text).width;
+        let width = this.ctx.measureText(text).width;
 
         this.ctx.fillStyle = "rgba(160, 160, 160, 0.7)";
         this.ctx.fillRect(0, this.canvas.height-2*fontSize, width + fontSize, fontSize*2);
@@ -175,11 +175,8 @@ class CheckerPanel
 
 		this.drawSquare(this.imgWolf, this.gameState.wolf.x, this.gameState.wolf.y);
 
-		for (var i = 0; i < this.gameState.sheep.length; ++i)
-		{
-			var ps = this.gameState.sheep[i];
+		for (let ps of this.gameState.sheep)
 			this.drawSquare(this.imgSheep, ps.x, ps.y);
-		}
 
 
 		// To check if order of sheep position is correct
@@ -190,9 +187,9 @@ class CheckerPanel
 		// 	this.ctx.strokeStyle = Color[Color.Black];
 		// 	this.ctx.lineWidth = 1;
         //
-		// 	for (var i = 0; i < this.gameState.sheep.length; ++i)
+		// 	for (let i = 0; i < this.gameState.sheep.length; ++i)
 		// 	{
-		// 		var p = this.gameState.sheep[i];
+		// 		let p = this.gameState.sheep[i];
 		// 		this.ctx.strokeText((i + 1).toString(), p.x * this.XMAG + 2, p.y * this.YMAG + 2);
 		// 	}
 		// }
@@ -201,11 +198,8 @@ class CheckerPanel
 			this.drawSelected(this.selectedPiece, Color.Black);
 
 		if (this.validMoves !== null)
-			for (var i = 0; i < this.validMoves.length; ++i)
-			{
-				var p = this.validMoves[i]
+			for (let p of this.validMoves)
 				this.drawSelected(p, Color.Aqua);
-			}
 	}
 
 	private drawSquare(image: HTMLImageElement, x: number, y: number)
@@ -260,9 +254,8 @@ class CheckerPanel
 			return this.gameState.wolf === selected;
 		else
 		{
-			for (var i = 0; i < this.gameState.sheep.length; ++i)
+			for (let p of this.gameState.sheep)
 			{
-				var p = this.gameState.sheep[i];
 				if (p === selected)
 					return true;
 			}
@@ -278,10 +271,8 @@ class CheckerPanel
 		if (this.validMoves === null)
 			return false;
 
-		for (var i = 0; i < this.validMoves.length; ++i)
+		for (let p of  this.validMoves)
 		{
-			var p = this.validMoves[i]
-
 			if (p === selected)
 				return true;
 		}
@@ -297,7 +288,7 @@ class CheckerPanel
 		if (x >= 10 || y >= 10)
 			return;
 
-		var p = Pos.GetPos(x, y);
+		let p = Pos.GetPos(x, y);
 
 		console.log("canvas_MouseClick - x=" + x + " y=" + y + " p=" + p + " this.Selected=" + this.selectedPiece); // + " - onMovePiece: " + this.onMovePiece);
 

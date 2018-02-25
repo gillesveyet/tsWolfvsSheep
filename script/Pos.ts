@@ -33,11 +33,11 @@ class Pos
 
 	static Init(): void
 	{
-		for (var x = 0; x < 10; ++x)
+		for (let x = 0; x < 10; ++x)
 		{
 			Pos._allPos[x] = [];
 
-			for (var y = 0; y < 10; ++y)
+			for (let y = 0; y < 10; ++y)
 				Pos._allPos[x][y] = new Pos(x, y);
 		}
 	}
@@ -56,7 +56,7 @@ class Pos
 		this.x = x;
 		this.y = y;
 
-		var n = (9 - this.y) * 5;
+		let n = (9 - this.y) * 5;
 
 		if (this.y % 2 === 0)
 			n += 4 - (this.x / 2 | 0);
@@ -89,11 +89,11 @@ class Pos
 
 	getWolfMoves(): Pos[]
 	{
-		var x = this.x;
-		var y = this.y;
-		var result: Pos[] = [];
+		let x = this.x;
+		let y = this.y;
+		let result: Pos[] = [];
 
-		var z = 0;
+		let z = 0;
 		//Can omit check Y < 9 because it would mean that wolf has already win. 
 		//if (Y < 9)
 		//{
@@ -138,10 +138,10 @@ class Pos
 
 	getSheepMoves(): Pos[]
 	{
-		var x = this.x;
-		var y = this.y;
-		var result: Pos[] = [];
-		var z = 0;
+		let x = this.x;
+		let y = this.y;
+		let result: Pos[] = [];
+		let z = 0;
 
 		if (y > 0)
 		{

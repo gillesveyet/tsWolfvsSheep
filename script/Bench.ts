@@ -7,7 +7,7 @@ class Bench
 {
 	private static getBrowserName() : string
 	{
-		var agt = navigator.userAgent;
+		let agt = navigator.userAgent;
 
 		if (agt.indexOf("Trident") > 0)
 			return "Internet Explorer";
@@ -19,18 +19,19 @@ class Bench
 	{
 		win.document.write("<p>Benchmark running. Please wait.</p>");
 
-		var res = Helper.StringFormat("{0} sheepDepth:{1} wolfDepth:{2} {3}", new Date().toISOString(), sheepDepth, wolfDepth, this.getBrowserName());
+		let res = Helper.StringFormat("{0} sheepDepth:{1} wolfDepth:{2} {3}", new Date().toISOString(), sheepDepth, wolfDepth, this.getBrowserName());
 		res += "<br>";
 
-		var tsTotal = 0;
-		var tsMax = 0;
-		var nbTotal = 0;
+		let tsTotal = 0;
+		let tsMax = 0;
+		let nbTotal = 0;
+		let solver: Solver;
 
-		var gs = GameState.GetInitialGameState();
+		let gs = GameState.GetInitialGameState();
 
 		for (; !gs.isGameOver() ;)
 		{
-			var solver = new Solver();
+			solver = new Solver();
 
 			if (gs.isWolf)
 				gs = solver.play(gs, wolfDepth);
