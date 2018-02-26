@@ -69,7 +69,7 @@ class Solver {
 			sheep.sort((a: Pos, b: Pos) => { return a.pval - b.pval; });
 
 			let gs = new GameState(n * 2, new Pos(5, 0), sheep);	// wolf position is not important
-			this.DictSheep[gs.getHashSheep()] = -n - 1;
+			this.DictSheep[gs.getHashSheep()] = 100 - n;
 		}
 	}
 	// End Static Init
@@ -106,19 +106,20 @@ class Solver {
 
 
 	private play_(gsParent: GameState): GameState {
+		let wolfTurn = gsParent.isWolf;		// true if wolf plays this turn
 		let states = gsParent.play();
 		let x: number;
 
 		for (let gsChild of states) {
 
-			if (!gsChild.isWolf && gsChild.wolfWillWin())	// wolf play and win
+			if (wolfTurn && gsChild.wolfWillWin())	// wolf play and win
 			{
-				this.score = -gsChild.getNegamaxScore(true);
+				this.score = gsParent.getNegamaxScoreWin();
 				return gsChild;
 			}
-			else if (gsChild.isWolf && (x = Solver.DictSheep[gsChild.getHashSheep()]) !== undefined)	// sheep : perfect move
+			else if (!wolfTurn && (x = Solver.DictSheep[gsChild.getHashSheep()]) !== undefined)	// sheep : perfect move
 			{
-				this.score = -x;
+				this.score = x;
 				return gsChild;
 			}
 		}
@@ -162,7 +163,7 @@ class Solver {
 			if (wolfTurn && gsChild.wolfWillWin())
 				return -gsChild.getNegamaxScore(true);									//wolf play and win
 			else if (!wolfTurn && (x = Solver.DictSheep[gsChild.getHashSheep()]) !== undefined)	// sheep : perfect move
-				return -x;
+				return x;
 		}
 
 		let max = Solver.MIN_VALUE;
