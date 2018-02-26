@@ -40,8 +40,7 @@ class CheckerPanel
 		this.canvas.onclick = (ev: MouseEvent) =>
 		{
 			//cf. http://miloq.blogspot.co.uk/2011/05/coordinates-mouse-click-canvas.html
-			//console.log("canvas_onclick - ev:" + " (" + ev.clientX + "," + ev.clientY + ")");
-			console.log(Helper.StringFormat("canvas_onclick ev:{0} x={1} y={2} clientX={3} clientY={4} pageXOffset={5} pageYOffset={6} canvas.scrollLeft={7} canvas.scrollTop={8} canvas.offsetLeft={9} canvas.offsetTop={10}", ev, ev.x, ev.y, ev.clientX, ev.clientY, window.pageXOffset, window.pageYOffset, canvas.scrollLeft, canvas.scrollTop, canvas.offsetLeft, canvas.offsetTop));
+			//console.log(Helper.StringFormat("canvas_onclick ev:{0} x={1} y={2} clientX={3} clientY={4} pageXOffset={5} pageYOffset={6} canvas.scrollLeft={7} canvas.scrollTop={8} canvas.offsetLeft={9} canvas.offsetTop={10}", ev, ev.x, ev.y, ev.clientX, ev.clientY, window.pageXOffset, window.pageYOffset, canvas.scrollLeft, canvas.scrollTop, canvas.offsetLeft, canvas.offsetTop));
 			this.canvas_MouseClick((ev.clientX - canvas.offsetLeft + window.pageXOffset) / this.XMAG | 0, (ev.clientY - canvas.offsetTop + window.pageYOffset) / this.YMAG | 0);
 		};
 
@@ -290,7 +289,7 @@ class CheckerPanel
 
 		let p = Pos.GetPos(x, y);
 
-		console.log("canvas_MouseClick - x=" + x + " y=" + y + " p=" + p + " this.Selected=" + this.selectedPiece); // + " - onMovePiece: " + this.onMovePiece);
+		//console.log("canvas_MouseClick - x=" + x + " y=" + y + " p=" + p + " this.Selected=" + this.selectedPiece); // + " - onMovePiece: " + this.onMovePiece);
 
 		if (this.isSelectedValid(p))
 			this.updateSelected(p, true);

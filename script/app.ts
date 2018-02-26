@@ -35,7 +35,7 @@ class Game {
     playerMode: PlayerMode;
 
     getWolfDepth(): number {
-        let d = parseInt((<HTMLInputElement> document.getElementById("wolf_depth")).value);
+        let d = parseInt((<HTMLInputElement>document.getElementById("wolf_depth")).value);
 
         if (isNaN(d) || d <= 0)
             return DEFAULT_DEPTH;
@@ -44,7 +44,7 @@ class Game {
     }
 
     getSheepDepth(): number {
-        let d = parseInt((<HTMLInputElement> document.getElementById("sheep_depth")).value);
+        let d = parseInt((<HTMLInputElement>document.getElementById("sheep_depth")).value);
 
         if (isNaN(d) || d <= 0)
             return DEFAULT_DEPTH;
@@ -81,6 +81,7 @@ class Game {
     displayDebug(msg: string) {
         //document.getElementById("dbg").innerText = msg; // not working with Firefox
         $("#dbg").text(msg);
+        console.log(msg);
     }
 
     public run(): void {
@@ -93,8 +94,8 @@ class Game {
         if (!isNaN(sheepDepth) || sheepDepth <= 0)
             sheepDepth = DEFAULT_DEPTH;
 
-        (<HTMLInputElement> document.getElementById("wolf_depth")).value = wolfDepth.toString();
-        (<HTMLInputElement> document.getElementById("sheep_depth")).value = wolfDepth.toString();
+        (<HTMLInputElement>document.getElementById("wolf_depth")).value = wolfDepth.toString();
+        (<HTMLInputElement>document.getElementById("sheep_depth")).value = wolfDepth.toString();
 
         //window.document.title = Helper.StringFormat( "Loup et les Agneaux - wolf:{0} sheep:{1}", wolfDepth, sheepDepth);
 
@@ -179,7 +180,7 @@ class Game {
             this.startGame();
         });
 
-        this.checker = new CheckerPanel(<HTMLCanvasElement> document.getElementById('can'));
+        this.checker = new CheckerPanel(<HTMLCanvasElement>document.getElementById('can'));
 
         this.checker.onGetValidMoves = (selected: Pos) => {
             return this.getGS().getValidMoves(selected);
@@ -223,7 +224,7 @@ class Game {
 
         let initial = gs !== null && gs.nbMoves < 2;
 
-        (<HTMLInputElement> document.getElementById("game_back")).disabled = !(!initial && (this.playerMode !== PlayerMode.TwoPlayers || IsExpertMode));
+        (<HTMLInputElement>document.getElementById("game_back")).disabled = !(!initial && (this.playerMode !== PlayerMode.TwoPlayers || IsExpertMode));
 
     }
 

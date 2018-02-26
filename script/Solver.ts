@@ -128,9 +128,8 @@ class Solver {
 		let max = Solver.MIN_VALUE;
 
 		for (let gsChild of states) {
-
-			if (gsChild.wolfHasWon())
-				x = -gsChild.getNegamaxScore(true);
+			if (!wolfTurn && gsChild.wolfHasWon())			// optimization: wolfTurn already been checked so only check if sheep turn
+				x = -gsChild.getNegamaxScore(true);			// sheep lose (bad move)
 			else
 				x = -this.negaMax(gsChild, Solver.MIN_VALUE, -max);
 
@@ -160,8 +159,8 @@ class Solver {
 		let wolfTurn = gsParent.isWolf;	// true if wolf plays this turn
 
 		for (let gsChild of states) {
-			if (wolfTurn && gsChild.wolfWillWin())
-				return -gsChild.getNegamaxScore(true);									//wolf play and win
+			if (wolfTurn && gsChild.wolfWillWin())		//wolf play and win
+				return gsParent.getNegamaxScoreWin();
 			else if (!wolfTurn && (x = Solver.DictSheep[gsChild.getHashSheep()]) !== undefined)	// sheep : perfect move
 				return x;
 		}
@@ -170,8 +169,8 @@ class Solver {
 		let amax = 1000 - 1 - nbMoves;
 
 		for (let gsChild of states) {
-			if (!wolfTurn && gsChild.wolfHasWon())					// optimization: wolfTurn already been checked so only check if sheep turn
-				x = -gsChild.getNegamaxScore(true);		// sheep lose (bad move)
+			if (!wolfTurn && gsChild.wolfHasWon())			// optimization: wolfTurn already been checked so only check if sheep turn
+				x = -gsChild.getNegamaxScore(true);			// sheep lose (bad move)
 			else if (gsChild.nbMoves >= this.maxMoves)
 				x = 0;
 			else if (amax <= alpha) {
