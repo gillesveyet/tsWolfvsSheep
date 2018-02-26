@@ -1,29 +1,25 @@
 /// <reference path="Helper.ts" />
 /// <reference path="Pos.ts" />
 
-enum GameStatus
-{
+enum GameStatus {
 	SheepWon = -1,
 	NotFinished = 0,
 	WolfWon = 1
 }
 
 
-class GameState
-{
+class GameState {
 	//Const
 	private static NB_SHEEP = 5;
 
 	// Static Init
 	private static DictWolf: HashTable<number> = {};
 
-	private static Ctor = (() =>
-	{
+	private static Ctor = (() => {
 		GameState.InitDictWolf();
 	})();
 
-	private static InitDictWolf()
-	{
+	private static InitDictWolf() {
 		let patterns: string[] = [
 			//Size: 1
 
@@ -412,8 +408,7 @@ class GameState
 		];
 
 
-		for (let ip = 0; ip < patterns.length; ++ip)
-		{
+		for (let ip = 0; ip < patterns.length; ++ip) {
 			let pattern = patterns[ip];
 			let rows = pattern.split("!");
 			let nbCol = rows[0].length;
@@ -428,26 +423,21 @@ class GameState
 			if (nbRow < 2 || nbRow > 5 || shift < 0 || row[wx] !== "X")
 				throw "Invalid pattern: " + pattern;
 
-			for (let i = 0; i < nbCol; ++i)
-			{
+			for (let i = 0; i < nbCol; ++i) {
 				let c = row[i];
-				if (i !== wx)
-				{
-					if (i % 2 === offset)
-					{
+				if (i !== wx) {
+					if (i % 2 === offset) {
 						if (c !== "_")
 							throw "Invalid pattern: " + pattern;
 					}
-					else
-					{
+					else {
 						if (c !== " ")
 							throw "Invalid pattern: " + pattern;
 					}
 				}
 			}
 
-			for (let dy = 1; dy < nbRow; ++dy)
-			{
+			for (let dy = 1; dy < nbRow; ++dy) {
 				row = rows[dy];
 
 				if (row.length !== nbCol)
@@ -455,14 +445,11 @@ class GameState
 
 				offset = (nbRow - shift + dy + 1) % 2;
 
-				for (let i = 0; i < nbCol; ++i)
-				{
+				for (let i = 0; i < nbCol; ++i) {
 					let c = row[i];
 
-					if (i % 2 === offset)
-					{
-						if (c === "O")
-						{
+					if (i % 2 === offset) {
+						if (c === "O") {
 							let dx = ((i - wx + dy) / 2) | 0;		// optimization : use integer
 							hash1 += 1 << dx + dy * 5 - 5;
 							hash2 += 1 << dy - dx + dy * 5 - 5;		// symmetry ( left <-> right)
@@ -470,8 +457,7 @@ class GameState
 						else if (c !== "_")
 							throw "Invalid pattern: " + pattern;
 					}
-					else
-					{
+					else {
 						if (c !== " ")
 							throw "Invalid pattern: " + pattern;
 					}
@@ -483,8 +469,7 @@ class GameState
 
 			let alt = hash1 !== hash2;
 
-			if (shift !== 0)
-			{
+			if (shift !== 0) {
 				hash1 += shift << 26;	// bits 26-28 : shift 
 				hash2 += shift << 26;
 				hash2 += 1 << 25;		// bit 25 : 0 = left side,  1 =right side
@@ -501,8 +486,7 @@ class GameState
 
 
 
-	static GetInitialGameState()
-	{
+	static GetInitialGameState() {
 		let gs = new GameState(0, Pos.GetPos(5, 0), [Pos.GetPos(0, 9), Pos.GetPos(2, 9), Pos.GetPos(4, 9), Pos.GetPos(6, 9), Pos.GetPos(8, 9)]);
 		gs.status = GameStatus.NotFinished;
 		return gs;
@@ -514,8 +498,7 @@ class GameState
 	sheep: Pos[];
 	status: GameStatus;
 
-	constructor(nbMoves: number, wolf: Pos, sheep: Pos[])
-	{
+	constructor(nbMoves: number, wolf: Pos, sheep: Pos[]) {
 		this.nbMoves = nbMoves;
 		this.isWolf = nbMoves % 2 === 0;
 		this.wolf = wolf;
@@ -523,8 +506,7 @@ class GameState
 		this.status = GameStatus.NotFinished; // Optimization ?  Add all properties in constructor. cf. http://msdn.microsoft.com/en-us/library/windows/apps/hh781219.aspx
 	}
 
-	public isGameOver(): boolean
-	{
+	public isGameOver(): boolean {
 		return this.status !== GameStatus.NotFinished;
 	}
 
@@ -559,28 +541,23 @@ class GameState
 	//	return gs;
 	//}
 
-	private makeNewGameStateWolf(wolf: Pos): GameState
-	{
+	private makeNewGameStateWolf(wolf: Pos): GameState {
 		return new GameState(this.nbMoves + 1, wolf, this.sheep);
 	}
 
-	private makeNewGameStateSheep(olds: Pos, news: Pos): GameState
-	{
+	private makeNewGameStateSheep(olds: Pos, news: Pos): GameState {
 		let newSheep: Pos[] = [];
 		let shift = false;
 		let newspval = news.pval;
 		let z = 0;
 
-		for (let p of this.sheep)
-		{
-			if (p === olds)
-			{
+		for (let p of this.sheep) {
+			if (p === olds) {
 				shift = true;
 				continue;
 			}
 
-			if (shift && newspval < p.pval)
-			{
+			if (shift && newspval < p.pval) {
 				//newSheep.push(news);
 				newSheep[z++] = news;
 				shift = false;
@@ -600,8 +577,7 @@ class GameState
 		return new GameState(this.nbMoves + 1, this.wolf, newSheep);
 	}
 
-	public makePlayerMove(oldp: Pos, newp: Pos): GameState
-	{
+	public makePlayerMove(oldp: Pos, newp: Pos): GameState {
 		let gs: GameState;
 
 		if (this.isWolf)
@@ -614,13 +590,11 @@ class GameState
 	}
 
 
-	public checkStatus(): void
-	{
+	public checkStatus(): void {
 		this.status = this.getStatus();
 	}
 
-	private getStatus(): GameStatus
-	{
+	private getStatus(): GameStatus {
 		if (this.wolfHasWon())
 			return GameStatus.WolfWon;
 
@@ -631,29 +605,24 @@ class GameState
 		return GameStatus.NotFinished;
 	}
 
-	public getValidMoves(selected: Pos): Pos[]
-	{
+	public getValidMoves(selected: Pos): Pos[] {
 		if (this.isWolf)
 			return this.getValidWolfMoves();
 		else
 			return this.getValidSheepMoves(selected);
 	}
 
-	private getValidWolfMoves(): Pos[]
-	{
+	private getValidWolfMoves(): Pos[] {
 		let list: Pos[] = [];
 		let moves = this.wolf.getWolfMoves();
 
-		for (let p of moves)
-		{
+		for (let p of moves) {
 			let ok = true;
 
-			for (let j = 0; j < this.sheep.length; ++j)
-			{
+			for (let j = 0; j < this.sheep.length; ++j) {
 				let s = this.sheep[j];
 
-				if (p === s)
-				{
+				if (p === s) {
 					ok = false;
 					break;
 				}
@@ -666,24 +635,20 @@ class GameState
 		return list;
 	}
 
-	private getValidSheepMoves(selected: Pos): Pos[]
-	{
+	private getValidSheepMoves(selected: Pos): Pos[] {
 		let list: Pos[] = [];
 		let moves = selected.getSheepMoves();
 
-		for (let p of moves)
-		{
+		for (let p of moves) {
 			if (p === this.wolf)
 				continue;
 
 			let ok = true;
 
-			for (let j = 0; j < this.sheep.length; ++j)
-			{
+			for (let j = 0; j < this.sheep.length; ++j) {
 				let s = this.sheep[j];
 
-				if (p === s)
-				{
+				if (p === s) {
 					ok = false;
 					break;
 				}
@@ -697,13 +662,11 @@ class GameState
 		return list;
 	}
 
-	public wolfHasWon(): boolean
-	{
+	public wolfHasWon(): boolean {
 		return this.wolf.y >= this.sheep[0].y;
 	}
 
-	public wolfWillWin(): boolean
-	{
+	public wolfWillWin(): boolean {
 		if (this.wolfHasWon())
 			return true;
 
@@ -717,8 +680,7 @@ class GameState
 		let hash = 0;
 		let dyMax = 0;
 
-		for (let p of  this.sheep)
-		{
+		for (let p of this.sheep) {
 			let dy = p.y - wy;
 
 			if (dy <= 0)
@@ -746,52 +708,42 @@ class GameState
 		return GameState.DictWolf[hash] !== undefined;
 	}
 
-	public play(): GameState[]
-	{
+	public play(): GameState[] {
 		let S0 = this.sheep[0];
 		let S1 = this.sheep[1];
 		let S2 = this.sheep[2];
 		let S3 = this.sheep[3];
 		let S4 = this.sheep[4];
 
-		let i, j;
-		let p: Pos;
-		let moves: Pos[];
 		let list: GameState[] = [];
 		let z = 0;
 
-		if (this.isWolf)
-		{
-			moves = this.wolf.getWolfMoves();
+		if (this.isWolf) {
+			let moves = this.wolf.getWolfMoves();
 
-			for (i = 0; i < moves.length; ++i)
-			{
-				p = moves[i];
-				if (p !== S0 && p !== S1 && p !== S2 && p !== S3 && p !== S4)
+			for (let p of moves) {
+				if (p !== S0 && p !== S1 && p !== S2 && p !== S3 && p !== S4) {
 					//list.push(this.makeNewGameStateWolf(p));
-					list[z++] = this.makeNewGameStateWolf(p);
+					list[z++] = this.makeNewGameStateWolf(p);	// faster than push, see https://jsperf.com/push-method-vs-setting-via-key
+				}
 			}
 		}
-		else
-		{
-
+		else {
 			let wx = this.wolf.x;
 
-			for (i = 0; i < this.sheep.length; ++i)
-			{
-				let olds = this.sheep[i];
+			for (let olds of this.sheep) {
 				let x = olds.x;
 				let y = olds.y;
 
 				if (y === 0)
 					continue;
 
-				if (x > wx)
-				{
+				let p: Pos;
+
+				if (x > wx) {
 					p = Pos.GetPos(x - 1, y - 1);
 				}
-				else
-				{
+				else {
 					if (x === 9)
 						continue;
 
@@ -806,24 +758,22 @@ class GameState
 			}
 
 
-			for (i = 0; i < this.sheep.length; ++i)
-			{
-				let olds = this.sheep[i];
+			for (let olds of this.sheep) {
 				let x = olds.x;
 				let y = olds.y;
 
 				if (y === 0)
 					continue;
 
-				if (x > wx)
-				{
+				let p: Pos;
+
+				if (x > wx) {
 					if (x === 9)
 						continue;
 
 					p = Pos.GetPos(x + 1, y - 1);
 				}
-				else
-				{
+				else {
 					if (x === 0)
 						continue;
 
@@ -841,23 +791,19 @@ class GameState
 		return list;
 	}
 
-	public getNegamaxScore(wolfWon: boolean): number
-	{
+	public getNegamaxScore(wolfWon: boolean): number {
 		return this.isWolf === wolfWon ? 1000 - this.nbMoves : -1000 + this.nbMoves;
 	}
 
-	public getNegamaxScoreLost(): number
-	{
+	public getNegamaxScoreLost(): number {
 		return -1000 + this.nbMoves;
 	}
 
-	public getNegamaxScoreWin(): number
-	{
+	public getNegamaxScoreWin(): number {
 		return 1000 - this.nbMoves;
 	}
 
-	public getHashSheep(): number
-	{
+	public getHashSheep(): number {
 		return this.sheep[0].pval | this.sheep[1].pval << 6 | this.sheep[2].pval << 12 | this.sheep[3].pval << 18 | this.sheep[4].pval << 24;
 	}
 }
