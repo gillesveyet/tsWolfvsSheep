@@ -116,6 +116,10 @@ class Solver {
 	private negaMax(gsParent: GameState, alpha: number, beta: number): number {
 		++this.nbIterations;
 
+		//Just to check, should never be true.
+		// if (alpha >= beta)
+		// 	console.warn(`alpha:${alpha}  beta:${beta}`);	
+
 		let nbMoves = gsParent.nbMoves;
 		if (nbMoves > this.maxDepth)
 			this.maxDepth = nbMoves;
