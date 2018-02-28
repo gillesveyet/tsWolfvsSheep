@@ -2,15 +2,13 @@
 /// <reference path="Pos.ts" />
 /// <reference path="GameState.ts" />
 
-enum Color
-{
+enum Color {
 	Black,
 	Aqua,
 }
 
 
-class CheckerPanel
-{
+class CheckerPanel {
 	public onPreloadDone: () => void;
 	public onGetValidMoves: (selected: Pos) => Pos[];
 	public onMovePiece: (oldPos: Pos, newPos: Pos) => void;
@@ -30,15 +28,13 @@ class CheckerPanel
 	private imgSheep = new Image();
 
 	private preloadCount = 0;
-    //private PRELOAD_TOTAL = 2;
-    private PRELOAD_TOTAL = 3;
+	//private PRELOAD_TOTAL = 2;
+	private PRELOAD_TOTAL = 3;
 
-	constructor(canvas: HTMLCanvasElement)
-	{
+	constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
 		//this.canvas.onclick = this.canvas_MouseClick.bind(this);
-		this.canvas.onclick = (ev: MouseEvent) =>
-		{
+		this.canvas.onclick = (ev: MouseEvent) => {
 			//cf. http://miloq.blogspot.co.uk/2011/05/coordinates-mouse-click-canvas.html
 			//console.log(Helper.StringFormat("canvas_onclick ev:{0} x={1} y={2} clientX={3} clientY={4} pageXOffset={5} pageYOffset={6} canvas.scrollLeft={7} canvas.scrollTop={8} canvas.offsetLeft={9} canvas.offsetTop={10}", ev, ev.x, ev.y, ev.clientX, ev.clientY, window.pageXOffset, window.pageYOffset, canvas.scrollLeft, canvas.scrollTop, canvas.offsetLeft, canvas.offsetTop));
 			this.canvas_MouseClick((ev.clientX - canvas.offsetLeft + window.pageXOffset) / this.XMAG | 0, (ev.clientY - canvas.offsetTop + window.pageYOffset) / this.YMAG | 0);
@@ -48,32 +44,27 @@ class CheckerPanel
 			throw "Browser does not support Canvas";
 	}
 
-	private initCanvas()
-	{
+	private initCanvas() {
 		this.ctx = this.canvas.getContext('2d');
 		this.XMAG = this.canvas.width / 10;
 		this.YMAG = this.canvas.height / 10;
 	}
 
-	preloadAssets(): void
-	{
+	preloadAssets(): void {
 		this.loadImage(this.imgChecker, 'media/Checker.png');
 		this.loadImage(this.imgWolf, 'media/Black.png');
 		this.loadImage(this.imgSheep, 'media/White.png');
 	}
 
-	private loadImage(img: HTMLImageElement, src: string)
-	{
+	private loadImage(img: HTMLImageElement, src: string) {
 		img.onload = this.preloadUpdate.bind(this);
 		img.src = src;
 	}
 
-	private preloadUpdate()
-	{
+	private preloadUpdate() {
 		++this.preloadCount;
 
-		if (this.preloadCount === this.PRELOAD_TOTAL)
-		{
+		if (this.preloadCount === this.PRELOAD_TOTAL) {
 			this.resizeCanvas();
 			this.initCanvas();
 
@@ -82,8 +73,7 @@ class CheckerPanel
 		}
 	}
 
-	private resizeCanvas()
-	{
+	private resizeCanvas() {
 		console.log(Helper.StringFormat("Screen width={0} height={1} ", screen.width, screen.height));
 		console.log(Helper.StringFormat("Windows innerWidth={0} innerHeight={1} ", window.innerWidth, window.innerHeight));
 
@@ -109,8 +99,7 @@ class CheckerPanel
 		this.canvas.height = siz;
 	}
 
-	SetPositions(gs: GameState, enablePlay: boolean): void
-	{
+	SetPositions(gs: GameState, enablePlay: boolean): void {
 		this.selectedPiece = null;
 		this.validMoves = null;
 
@@ -145,26 +134,24 @@ class CheckerPanel
 	}
 */
 
-    // new wait layer: bottom left
-    ShowWaitLayer()
-    {
-        let text = "Please wait...";
-        let fontSize = this.canvas.height / 20;
+	// new wait layer: bottom left
+	ShowWaitLayer() {
+		let text = "Please wait...";
+		let fontSize = this.canvas.height / 20;
 
-        this.ctx.font = fontSize + "px Verdana";
-        let width = this.ctx.measureText(text).width;
+		this.ctx.font = fontSize + "px Verdana";
+		let width = this.ctx.measureText(text).width;
 
-        this.ctx.fillStyle = "rgba(160, 160, 160, 0.7)";
-        this.ctx.fillRect(0, this.canvas.height-2*fontSize, width + fontSize, fontSize*2);
+		this.ctx.fillStyle = "rgba(160, 160, 160, 0.7)";
+		this.ctx.fillRect(0, this.canvas.height - 2 * fontSize, width + fontSize, fontSize * 2);
 
-        this.ctx.textBaseline = "bottom";
-        this.ctx.fillStyle = "#FF0066";
-        this.ctx.fillText(text, fontSize/2 , this.canvas.height-fontSize/2);
-    }
+		this.ctx.textBaseline = "bottom";
+		this.ctx.fillStyle = "#FF0066";
+		this.ctx.fillText(text, fontSize / 2, this.canvas.height - fontSize / 2);
+	}
 
 
-	private onPaint(): void
-	{
+	private onPaint(): void {
 		this.ctx.drawImage(this.imgChecker, 0, 0, this.canvas.width, this.canvas.height);
 		//this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -185,7 +172,7 @@ class CheckerPanel
 		// 	this.ctx.textBaseline = "top";
 		// 	this.ctx.strokeStyle = Color[Color.Black];
 		// 	this.ctx.lineWidth = 1;
-        //
+		//
 		// 	for (let i = 0; i < this.gameState.sheep.length; ++i)
 		// 	{
 		// 		let p = this.gameState.sheep[i];
@@ -201,26 +188,22 @@ class CheckerPanel
 				this.drawSelected(p, Color.Aqua);
 	}
 
-	private drawSquare(image: HTMLImageElement, x: number, y: number)
-	{
+	private drawSquare(image: HTMLImageElement, x: number, y: number) {
 		this.ctx.drawImage(image, x * this.XMAG, y * this.YMAG, this.XMAG, this.YMAG);
 	}
 
-	private drawSelected(p: Pos, color: Color): void
-	{
+	private drawSelected(p: Pos, color: Color): void {
 		this.ctx.lineWidth = 2;
 		this.ctx.strokeStyle = Color[color];
 		this.ctx.strokeRect(p.x * this.XMAG, p.y * this.YMAG, this.XMAG, this.YMAG);
 	}
 
 
-	private updateSelected(selected: Pos, refresh: boolean): void
-	{
+	private updateSelected(selected: Pos, refresh: boolean): void {
 		if (this.selectedPiece === null && selected === null)
 			return;
 
-		if (selected !== null && this.selectedPiece !== null && selected === this.selectedPiece)
-		{
+		if (selected !== null && this.selectedPiece !== null && selected === this.selectedPiece) {
 			//click on selected piece
 			//  -wolf : do nothing
 			//  -sheep : unselect
@@ -232,8 +215,7 @@ class CheckerPanel
 		else
 			this.selectedPiece = selected;
 
-		if (this.selectedPiece !== null)
-		{
+		if (this.selectedPiece !== null) {
 			if (this.onGetValidMoves)
 				this.validMoves = this.onGetValidMoves(this.selectedPiece)
 		}
@@ -244,34 +226,8 @@ class CheckerPanel
 			this.onPaint();
 	}
 
-	private isSelectedValid(selected: Pos): boolean
-	{
-		if (!selected.isValid)
-			return false;
-
-		if (this.gameState.isWolf)
-			return this.gameState.wolf === selected;
-		else
-		{
-			for (let p of this.gameState.sheep)
-			{
-				if (p === selected)
-					return true;
-			}
-
-			return false;
-		}
-	}
-
-	private isMoveValid(selected: Pos): boolean
-	{
-		//console.log("isMoveValid 1 : selected:" + selected + " this.validMoves:" + this.validMoves);
-
-		if (this.validMoves === null)
-			return false;
-
-		for (let p of  this.validMoves)
-		{
+	private isSheep(selected: Pos): boolean {
+		for (let p of this.gameState.sheep) {
 			if (p === selected)
 				return true;
 		}
@@ -279,8 +235,21 @@ class CheckerPanel
 		return false;
 	}
 
-	private canvas_MouseClick(x: number, y: number)
-	{
+	private isMoveValid(selected: Pos): boolean {
+		//console.log("isMoveValid 1 : selected:" + selected + " this.validMoves:" + this.validMoves);
+
+		if (this.validMoves === null)
+			return false;
+
+		for (let p of this.validMoves) {
+			if (p === selected)
+				return true;
+		}
+
+		return false;
+	}
+
+	private canvas_MouseClick(x: number, y: number) {
 		if (!this.isPlayEnabled)
 			return;
 
@@ -291,7 +260,7 @@ class CheckerPanel
 
 		//console.log("canvas_MouseClick - x=" + x + " y=" + y + " p=" + p + " this.Selected=" + this.selectedPiece); // + " - onMovePiece: " + this.onMovePiece);
 
-		if (this.isSelectedValid(p))
+		if ( !this.gameState.isWolf && this.isSheep(p))
 			this.updateSelected(p, true);
 		else if (this.selectedPiece !== null && this.isMoveValid(p) && this.onMovePiece)
 			this.onMovePiece(this.selectedPiece, p);

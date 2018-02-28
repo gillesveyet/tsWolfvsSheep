@@ -22,19 +22,15 @@
 /// Sheep start pos are 0,1,2,3,4
 /// Wolf start pos is 47
 
-class Pos
-{
+class Pos {
 	private static _allPos: Pos[][] = [];
 
-	private static Ctor = (() =>
-	{
+	private static Ctor = (() => {
 		Pos.Init();
 	})();
 
-	static Init(): void
-	{
-		for (let x = 0; x < 10; ++x)
-		{
+	static Init(): void {
+		for (let x = 0; x < 10; ++x) {
 			Pos._allPos[x] = [];
 
 			for (let y = 0; y < 10; ++y)
@@ -42,8 +38,7 @@ class Pos
 		}
 	}
 
-	static GetPos(x: number, y: number)
-	{
+	static GetPos(x: number, y: number) {
 		return Pos._allPos[x][y];
 	}
 
@@ -51,8 +46,7 @@ class Pos
 	y: number;
 	pval: number;
 
-	constructor(x: number, y: number)
-	{
+	constructor(x: number, y: number) {
 		this.x = x;
 		this.y = y;
 
@@ -67,10 +61,9 @@ class Pos
 	}
 
 
-	isValid(): boolean
-	{
-		return this.x >= 0 && this.x < 5 && this.y >= 0 && this.y < 5 && (this.x + this.y) % 2 !== 0;
-	}
+	// isValid(): boolean {
+	// 	return this.x >= 0 && this.x < 10 && this.y >= 0 && this.y < 10 && (this.x + this.y) % 2 !== 0;
+	// }
 
 	//compareTo(other: Pos)
 	//{
@@ -82,13 +75,11 @@ class Pos
 	//	return this === other;
 	//}
 
-	toString()
-	{
+	toString() {
 		return Helper.StringFormat("({0},{1})", this.x, this.y);
 	}
 
-	getWolfMoves(): Pos[]
-	{
+	getWolfMoves(): Pos[] {
 		let x = this.x;
 		let y = this.y;
 		let result: Pos[] = [];
@@ -98,8 +89,7 @@ class Pos
 		//if (Y < 9)
 		//{
 
-		if (y % 2 === 0)
-		{
+		if (y % 2 === 0) {
 			if (x < 9)
 				//result.push(Pos.GetPos(x + 1, y + 1));
 				result[z++] = Pos.GetPos(x + 1, y + 1);
@@ -108,8 +98,7 @@ class Pos
 				//result.push(Pos.GetPos(x - 1, y + 1));
 				result[z++] = Pos.GetPos(x - 1, y + 1);
 		}
-		else
-		{
+		else {
 			//same moves as above but in different order : so that wolf try to remain in center position (X = 4 or x=5)
 			if (x > 0)
 				//result.push(Pos.GetPos(x - 1, y + 1));
@@ -122,8 +111,7 @@ class Pos
 
 		//}
 
-		if (y > 0)
-		{
+		if (y > 0) {
 			if (x < 9)
 				//result.push(Pos.GetPos(x + 1, y - 1));
 				result[z++] = Pos.GetPos(x + 1, y - 1);
@@ -136,17 +124,14 @@ class Pos
 		return result;
 	}
 
-	getSheepMoves(): Pos[]
-	{
+	getSheepMoves(): Pos[] {
 		let x = this.x;
 		let y = this.y;
 		let result: Pos[] = [];
 		let z = 0;
 
-		if (y > 0)
-		{
-			if (y % 2 === 0)
-			{
+		if (y > 0) {
+			if (y % 2 === 0) {
 				if (x > 0)
 					//result.push(Pos.GetPos(x - 1, y - 1));
 					result[z++] = Pos.GetPos(x - 1, y - 1);
@@ -155,8 +140,7 @@ class Pos
 					//result.push(Pos.GetPos(x + 1, y - 1));
 					result[z++] = Pos.GetPos(x + 1, y - 1);
 			}
-			else
-			{
+			else {
 				//same moves as above but in different order : so that sheep do not leave hole
 				if (x < 9)
 					//result.push(Pos.GetPos(x + 1, y - 1));
