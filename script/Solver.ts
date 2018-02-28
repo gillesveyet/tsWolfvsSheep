@@ -149,14 +149,15 @@ class Solver {
 			else
 				x = -this.negaMax(gsChild, -beta, -alpha);
 
-			if (x > max)
-				max = x;
-
-			if (x > alpha)
+			if (x > alpha) {
 				alpha = x;
 
-			if (alpha >= beta)
-				return alpha;
+				if (alpha >= beta)
+					return alpha;
+			}
+
+			if (x > max)
+				max = x;
 		}
 
 		return max;
