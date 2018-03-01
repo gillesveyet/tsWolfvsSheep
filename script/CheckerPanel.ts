@@ -203,7 +203,7 @@ class CheckerPanel {
 		if (this.selectedPiece === null && selected === null)
 			return;
 
-		if (selected !== null && this.selectedPiece !== null && selected === this.selectedPiece) {
+		if (selected !== null && this.selectedPiece !== null && selected.equals(this.selectedPiece)) {
 			//click on selected piece
 			//  -wolf : do nothing
 			//  -sheep : unselect
@@ -228,7 +228,7 @@ class CheckerPanel {
 
 	private isSheep(selected: Pos): boolean {
 		for (let p of this.gameState.sheep) {
-			if (p === selected)
+			if (p.equals(selected))
 				return true;
 		}
 
@@ -242,7 +242,7 @@ class CheckerPanel {
 			return false;
 
 		for (let p of this.validMoves) {
-			if (p === selected)
+			if (p.equals(selected))
 				return true;
 		}
 
