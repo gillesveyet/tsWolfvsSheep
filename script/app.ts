@@ -62,9 +62,6 @@ class Game {
 
     resetGame() {
         this.gameHistory = [];
-        //let gs = GameState.GetInitialGameState()
-        //this.addGS(gs);
-
         this.checker.SetPositions(null, false);
         this.ready = true;
 
@@ -154,12 +151,11 @@ class Game {
         };
 
         document.getElementById('game_back').onclick = () => {
-            if (this.playerMode === PlayerMode.TwoPlayers || (this.playerMode === PlayerMode.PlayWolf) !== this.getGS().isWolf) {
-                // Remove last move when sheep loose on their own move OR [ 2 Players mode && expert mode ]
+            if (this.playerMode === PlayerMode.TwoPlayers) {
                 this.gameHistory.pop();
             }
             else {
-                // Standard case : remove both player move and computer move
+                //Remove both player move and computer move
                 this.gameHistory.pop();
                 this.gameHistory.pop();
             }
@@ -222,9 +218,9 @@ class Game {
 
         this.displayInfo(gs);
 
-        let initial = gs !== null && gs.nbMoves < 2;
+        let allow = this.gameHistory.length > 2 || this.playerMode === PlayerMode.TwoPlayers && this.gameHistory.length > 1;
 
-        (<HTMLInputElement>document.getElementById("game_back")).disabled = !(!initial && (this.playerMode !== PlayerMode.TwoPlayers || IsExpertMode));
+        (<HTMLInputElement>document.getElementById("game_back")).disabled = !(allow && (this.playerMode !== PlayerMode.TwoPlayers || IsExpertMode));
 
     }
 

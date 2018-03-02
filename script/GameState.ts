@@ -488,7 +488,6 @@ class GameState {
 
 	static GetInitialGameState() {
 		let gs = new GameState(0, Pos.GetPos(5, 0), [Pos.GetPos(0, 9), Pos.GetPos(2, 9), Pos.GetPos(4, 9), Pos.GetPos(6, 9), Pos.GetPos(8, 9)]);
-		gs.status = GameStatus.NotFinished;
 		return gs;
 	}
 
@@ -496,14 +495,14 @@ class GameState {
 	isWolf: boolean;
 	wolf: Pos;
 	sheep: Pos[];
-	status: GameStatus;
+	score: number;
+
 
 	constructor(nbMoves: number, wolf: Pos, sheep: Pos[]) {
 		this.nbMoves = nbMoves;
 		this.isWolf = nbMoves % 2 === 0;
 		this.wolf = wolf;
 		this.sheep = sheep;
-		this.status = GameStatus.NotFinished; // Optimization ?  Add all properties in constructor. cf. http://msdn.microsoft.com/en-us/library/windows/apps/hh781219.aspx
 	}
 
 	public isGameOver(): boolean {
@@ -549,29 +548,36 @@ class GameState {
 	public makePlayerMove(oldp: Pos, newp: Pos): GameState {
 		let gs: GameState;
 
-		if (this.isWolf)
+		if (this.isWolf) {
 			gs = this.makeNewGameStateWolf(newp);
-		else
+
+			if (gs.wolfHasWon)
+				gs.score = MAX_SCORE;
+		}
+		else {
 			gs = this.makeNewGameStateSheep(oldp, newp);
 
-		gs.checkStatus();
+			let states = gs.play();
+			
+			if (states.length === 0)
+				gs.score = -MAX_SCORE;		// Sheep win (wolf is blocked)
+		}
+
+		console.log( `Player move ${this.playerCode} score:${gs.score} status:${gs.status}`)
 		return gs;
 	}
 
-
-	public checkStatus(): void {
-		this.status = this.getStatus();
+	get playerCode(){
+		return this.isWolf ? "W" : "S";
 	}
 
-	private getStatus(): GameStatus {
-		if (this.wolfHasWon())
+	get status(): GameStatus {
+		if (this.score === MAX_SCORE)
 			return GameStatus.WolfWon;
-
-		let list = this.play();
-		if (list.length === 0)
-			return this.isWolf ? GameStatus.SheepWon : GameStatus.WolfWon;
-
-		return GameStatus.NotFinished;
+		else if (this.score === -MAX_SCORE)
+			return GameStatus.SheepWon
+		else
+			return GameStatus.NotFinished;
 	}
 
 	public getValidMoves(selected: Pos): Pos[] {
@@ -631,7 +637,7 @@ class GameState {
 		return list;
 	}
 
-	public wolfHasWon(): boolean {
+	public get wolfHasWon(): boolean {
 		return this.deltaWolfToLowestSheep <= 0;
 	}
 
@@ -639,7 +645,7 @@ class GameState {
 		return this.sheep[0].y - this.wolf.y;
 	}
 
-	public wolfWillWin(): boolean {
+	public get wolfWillWin(): boolean {
 		let wy = this.wolf.y;
 
 		if (this.sheep[0].y - wy > 4)	// if lowest sheep is more than 4 row below wolf : skip test

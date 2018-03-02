@@ -4,27 +4,22 @@
 
 //Reference: An Introduction to Game Tree Algorithms : http://www.hamedahmadi.com/gametree/
 //
-//Game over & score (Negamax) :
-//	if ( gameover)
-//	{ 		
-//		score = playerA win ? 1000 - nbMoves : -1000 + nbMoves
-//		return isPlayerA ? score : -score;
-//	}
-//
-// PlayerA : Wolf
-// PlayerB : Sheep
+//Game over & score :
+// 	PlayerA : Wolf   WIN <=> score=1000
+// 	PlayerB : Sheep  WIN <=> score=-1000
 //
 //  1) gsChild.isWolf = true (gsParent.isWolf = false - sheep turn)
-//     - Wolf has won : score < 0
-//     - wolf has lost: score > 0
+//     - Wolf has won : NA
+//     - wolf has lost: negamax_score > 0
 //
 //  2) gsChild.isWolf = false (gsParent.isWolf = true - wolf turn)
-//     - Wolf has won : score > 0
+//     - Wolf has won : negamax_score > 0
 //     - wolf has lost: NA
 //  
-// 3) no move possible :  score <  0
+// 3) no move possible :  score <  0  SHOULD NOT BE POSSIBLE.
 
 const MAX_SCORE = 1000;
+
 
 class Solver {
 	//Const
@@ -99,12 +94,10 @@ class Solver {
 			}
 		}
 
-		this.score = gsParent.isWolf ? max : -max;	// transform negamax in normal score
-
-		gs.checkStatus();
+		this.score = gs.score = gsParent.isWolf ? max : -max;	// transform negamax to normal score
 
 		this.elapsed = new Date().getTime() - startDate.getTime();
-		this.statusString = `${!gs.isWolf ? "W" : "S"} - Moves:${gs.nbMoves} Score:${this.score} Nb:${this.nbIterations} Time:${this.elapsed} Wolf:${gs.wolf} Sheep:${gs.sheep}`;
+		this.statusString = `${gsParent.playerCode} - Moves:${gs.nbMoves} Score:${this.score} Nb:${this.nbIterations} Time:${this.elapsed} Wolf:${gs.wolf} Sheep:${gs.sheep}`;
 
 		return gs;
 	}
@@ -128,9 +121,9 @@ class Solver {
 
 		for (let gsChild of states) {
 			if (wolfTurn) {
-				if (gsChild.wolfHasWon())			// wolf play and win
+				if (gsChild.wolfHasWon)			// wolf play and win
 					return MAX_SCORE - depth;		// 		=> if depth = 0 : perfect score
-				else if (gsChild.wolfWillWin())		// wolf will win
+				else if (gsChild.wolfWillWin)		// wolf will win
 					return MAX_SCORE - depth - gsChild.deltaWolfToLowestSheep;
 			} else if (Solver.DictSheep[gsChild.getHashSheep()])	// sheep : perfect move
 				return 100 + depth;
@@ -142,7 +135,7 @@ class Solver {
 		for (let gsChild of states) {
 			let x: number;
 
-			if (!wolfTurn && gsChild.wolfHasWon())			// optimization: wolfTurn already been checked so only check if sheep turn
+			if (!wolfTurn && gsChild.wolfHasWon)			// optimization: wolfTurn already been checked so only check if sheep turn
 				x = -MAX_SCORE + depth + 1;					// sheep bad move, wolf win on next turn.
 			else if (depth === this.maxDepth)
 				x = 0;
