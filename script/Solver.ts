@@ -84,17 +84,25 @@ class Solver {
 
 		let startDate = new Date();
 		let gs = null;
-		let max = Solver.MIN_VALUE;
+		let score = Solver.MIN_VALUE;
+		let wolfTurn = gsParent.isWolf;	// true if wolf plays this turn
+
 
 		for (let gsChild of gsParent.play()) {
-			let val = -this.negaMax(gsChild, 0, Solver.MIN_VALUE, -max);
-			if (val > max) {
-				max = val;
+			if (wolfTurn && gsChild.wolfHasWon) {
+				score = MAX_SCORE
+				gs = gsChild;
+				break;
+			}
+
+			let val = -this.negaMax(gsChild, 0, Solver.MIN_VALUE, -score);
+			if (val > score) {
+				score = val;
 				gs = gsChild;
 			}
 		}
 
-		this.score = gs.score = gsParent.isWolf ? max : -max;	// transform negamax to normal score
+		this.score = gs.score = gsParent.isWolf ? score : -score;	// transform negamax to normal score
 
 		this.elapsed = new Date().getTime() - startDate.getTime();
 		this.statusString = `${gsParent.playerCode} - Moves:${gs.nbMoves} Score:${this.score} Nb:${this.nbIterations} Time:${this.elapsed} Wolf:${gs.wolf} Sheep:${gs.sheep}`;
@@ -113,7 +121,6 @@ class Solver {
 
 		let states = gsParent.play();
 
-		//TODO: remove this test.
 		if (states.length === 0)
 			return -MAX_SCORE + depth;
 
