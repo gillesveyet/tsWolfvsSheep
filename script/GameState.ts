@@ -475,10 +475,10 @@ class GameState {
 				hash2 += 1 << 25;		// bit 25 : 0 = left side,  1 =right side
 			}
 
-			GameState.DictWolf[hash1] = nbRow - 1;
+			GameState.DictWolf[hash1] = nbRow;
 
 			if (alt)
-				GameState.DictWolf[hash2] = nbRow - 1;
+				GameState.DictWolf[hash2] = nbRow;
 		}
 	}
 	// End Static Init
@@ -632,13 +632,14 @@ class GameState {
 	}
 
 	public wolfHasWon(): boolean {
-		return this.wolf.y >= this.sheep[0].y;
+		return this.deltaWolfToLowestSheep <= 0;
+	}
+
+	public get deltaWolfToLowestSheep(): number {
+		return this.sheep[0].y - this.wolf.y;
 	}
 
 	public wolfWillWin(): boolean {
-		if (this.wolfHasWon())
-			return true;
-
 		let wy = this.wolf.y;
 
 		if (this.sheep[0].y - wy > 4)	// if lowest sheep is more than 4 row below wolf : skip test
@@ -758,18 +759,6 @@ class GameState {
 		}
 
 		return list;
-	}
-
-	public getNegamaxScore(wolfWon: boolean): number {
-		return this.isWolf === wolfWon ? 1000 - this.nbMoves : -1000 + this.nbMoves;
-	}
-
-	public getNegamaxScoreLost(): number {
-		return -1000 + this.nbMoves;
-	}
-
-	public getNegamaxScoreWin(): number {
-		return 1000 - this.nbMoves;
 	}
 
 	public getHashSheep(): number {

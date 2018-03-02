@@ -24,6 +24,8 @@
 //  
 // 3) no move possible :  score <  0
 
+const MAX_SCORE = 1000;
+
 class Solver {
 	//Const
 	private static MIN_VALUE = -999999;
@@ -82,7 +84,7 @@ class Solver {
 	public statusString: string;
 
 	public play(gsParent: GameState, maxDepth: number): GameState {
-		this.maxDepth = maxDepth;
+		this.maxDepth = maxDepth - 1;
 		this.nbIterations = 0;
 
 		let startDate = new Date();
@@ -90,7 +92,7 @@ class Solver {
 		let max = Solver.MIN_VALUE;
 
 		for (let gsChild of gsParent.play()) {
-			let val = -this.negaMax(gsChild, 1, Solver.MIN_VALUE, -max);
+			let val = -this.negaMax(gsChild, 0, Solver.MIN_VALUE, -max);
 			if (val > max) {
 				max = val;
 				gs = gsChild;
@@ -116,31 +118,36 @@ class Solver {
 		// if (alpha >= beta)
 		// 	console.warn(`alpha:${alpha}  beta:${beta}`);	
 
-		let nbMoves = gsParent.nbMoves;
-
 		let states = gsParent.play();
 
+		//TODO: remove this test.
 		if (states.length === 0)
-			return gsParent.getNegamaxScoreLost();
+			return -MAX_SCORE + depth;
 
 		let wolfTurn = gsParent.isWolf;	// true if wolf plays this turn
 
 		for (let gsChild of states) {
-			if (wolfTurn && gsChild.wolfWillWin())		//wolf play and win
-				return gsParent.getNegamaxScoreWin();
-			else if (!wolfTurn && Solver.DictSheep[gsChild.getHashSheep()])	// sheep : perfect move
-				return depth;
+			if (wolfTurn) {
+				let delta = gsChild.deltaWolfToLowestSheep;
+
+				if (delta <= 0)						// wolf play and win
+					return MAX_SCORE - depth;		// 		=> if depth = 0 : perfect score
+				else if (gsChild.wolfWillWin())		// wolf will win
+					return MAX_SCORE - depth - delta;
+			}
+			else if (Solver.DictSheep[gsChild.getHashSheep()])	// sheep : perfect move
+				return 100 + depth;
 		}
 
 		let max = Solver.MIN_VALUE;
-		let amax = 1000 - 1 - nbMoves;
+		let amax = 1000 - 1 - gsParent.nbMoves;
 
 		for (let gsChild of states) {
 			let x: number;
 
 			if (!wolfTurn && gsChild.wolfHasWon())			// optimization: wolfTurn already been checked so only check if sheep turn
-				x = -gsChild.getNegamaxScore(true);			// sheep lose (bad move)
-			else if (depth >= this.maxDepth)
+				x = -MAX_SCORE + depth;						// sheep lose (bad move)
+			else if (depth === this.maxDepth)
 				x = 0;
 			else if (amax <= alpha) {
 				x = amax;
