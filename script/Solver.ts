@@ -102,7 +102,7 @@ class Solver {
 		gs.checkStatus();
 
 		this.elapsed = new Date().getTime() - startDate.getTime();
-		this.statusString = Helper.StringFormat("{0} : Moves={1} Score={2} Nb={3} Time={4}", !gs.isWolf ? "W" : "S", gs.nbMoves, this.score, this.nbIterations, this.elapsed);
+		this.statusString = `${!gs.isWolf ? "W" : "S"} - Moves:${gs.nbMoves} Score:${this.score} Nb:${this.nbIterations} Time:${this.elapsed} Wolf:${gs.wolf} Sheep:${gs.sheep}`;
 
 		return gs;
 	}
@@ -129,7 +129,7 @@ class Solver {
 			if (wolfTurn && gsChild.wolfWillWin())		//wolf play and win
 				return gsParent.getNegamaxScoreWin();
 			else if (!wolfTurn && Solver.DictSheep[gsChild.getHashSheep()])	// sheep : perfect move
-				return nbMoves;
+				return depth;
 		}
 
 		let max = Solver.MIN_VALUE;
