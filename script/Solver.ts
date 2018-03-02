@@ -103,9 +103,8 @@ class Solver {
 		}
 
 		this.score = gs.score = gsParent.isWolf ? score : -score;	// transform negamax to normal score
-
 		this.elapsed = new Date().getTime() - startDate.getTime();
-		this.statusString = `${gsParent.playerCode} - Moves:${gs.nbMoves} Score:${this.score} Nb:${this.nbIterations} Time:${this.elapsed} Wolf:${gs.wolf} Sheep:${gs.sheep}`;
+		this.statusString = `${gs.nbMoves.toString().padStart(2)}: ${gs.getPlayerId(true)} Score:${gs.score.toString().padStart(5)} Wolf:${gs.wolf} Sheep:${gs.sheep} Nb:${this.nbIterations} Time:${this.elapsed}`;
 
 		return gs;
 	}

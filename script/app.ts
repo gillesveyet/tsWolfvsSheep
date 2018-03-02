@@ -290,7 +290,11 @@ class Game {
 //$(() => { new Game().run() });
 
 //OK
+
+let _game: Game;
+
 window.onload = () => {
-    new Game().run();
+    _game = new Game();
+    _game.run();
 };
 
