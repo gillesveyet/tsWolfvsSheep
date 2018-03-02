@@ -29,7 +29,7 @@ class Solver {
 	private static MIN_VALUE = -999999;
 
 	// Static Init
-	private static DictSheep: HashTable<number> = {};
+	private static DictSheep: HashTable<boolean> = {};
 
 	private static Ctor = (() => {
 		Solver.InitDictSheep();
@@ -42,7 +42,7 @@ class Solver {
 			let k = n % 10;
 			let by = (n / 10 | 0) * 2;
 
-			for (let i = 0; i < 5; ++i) {
+			for (let i = 0; i < NB_SHEEP; ++i) {
 				let x = 2 * i;
 				let dy;
 
@@ -69,30 +69,28 @@ class Solver {
 			sheep.sort((a: Pos, b: Pos) => { return a.pval - b.pval; });
 
 			let gs = new GameState(n * 2, new Pos(5, 0), sheep);	// wolf position is not important
-			this.DictSheep[gs.getHashSheep()] = 100 - n;
+			this.DictSheep[gs.getHashSheep()] = true;
 		}
 	}
 	// End Static Init
 
-	private maxMoves: number;
+	private maxDepth: number;
 
 	public score: number;
 	public elapsed: number;
 	public nbIterations: number;
-	public maxDepth: number;
 	public statusString: string;
 
 	public play(gsParent: GameState, maxDepth: number): GameState {
-		let startDate = new Date();
+		this.maxDepth = maxDepth;
 		this.nbIterations = 0;
-		this.maxDepth = gsParent.nbMoves;
-		this.maxMoves = gsParent.nbMoves + maxDepth;
 
+		let startDate = new Date();
 		let gs = null;
 		let max = Solver.MIN_VALUE;
 
 		for (let gsChild of gsParent.play()) {
-			let val = -this.negaMax(gsChild, Solver.MIN_VALUE, -max);
+			let val = -this.negaMax(gsChild, 1, Solver.MIN_VALUE, -max);
 			if (val > max) {
 				max = val;
 				gs = gsChild;
@@ -104,16 +102,14 @@ class Solver {
 		gs.checkStatus();
 
 		this.elapsed = new Date().getTime() - startDate.getTime();
-		this.maxDepth -= gsParent.nbMoves - 1;
-
-		this.statusString = Helper.StringFormat("{0} : Moves={1} Score={2} Nb={3} Time={4} MaxDepth={5}", !gs.isWolf ? "W" : "S", gs.nbMoves, this.score, this.nbIterations, this.elapsed, this.maxDepth);
+		this.statusString = Helper.StringFormat("{0} : Moves={1} Score={2} Nb={3} Time={4}", !gs.isWolf ? "W" : "S", gs.nbMoves, this.score, this.nbIterations, this.elapsed);
 
 		return gs;
 	}
 
 
 
-	private negaMax(gsParent: GameState, alpha: number, beta: number): number {
+	private negaMax(gsParent: GameState, depth: number, alpha: number, beta: number): number {
 		++this.nbIterations;
 
 		//Just to check, should never be true.
@@ -121,37 +117,36 @@ class Solver {
 		// 	console.warn(`alpha:${alpha}  beta:${beta}`);	
 
 		let nbMoves = gsParent.nbMoves;
-		if (nbMoves > this.maxDepth)
-			this.maxDepth = nbMoves;
 
 		let states = gsParent.play();
 
 		if (states.length === 0)
 			return gsParent.getNegamaxScoreLost();
 
-		let x: number;
 		let wolfTurn = gsParent.isWolf;	// true if wolf plays this turn
 
 		for (let gsChild of states) {
 			if (wolfTurn && gsChild.wolfWillWin())		//wolf play and win
 				return gsParent.getNegamaxScoreWin();
-			else if (!wolfTurn && (x = Solver.DictSheep[gsChild.getHashSheep()]) !== undefined)	// sheep : perfect move
-				return x;
+			else if (!wolfTurn && Solver.DictSheep[gsChild.getHashSheep()])	// sheep : perfect move
+				return nbMoves;
 		}
 
 		let max = Solver.MIN_VALUE;
 		let amax = 1000 - 1 - nbMoves;
 
 		for (let gsChild of states) {
+			let x: number;
+
 			if (!wolfTurn && gsChild.wolfHasWon())			// optimization: wolfTurn already been checked so only check if sheep turn
 				x = -gsChild.getNegamaxScore(true);			// sheep lose (bad move)
-			else if (gsChild.nbMoves >= this.maxMoves)
+			else if (depth >= this.maxDepth)
 				x = 0;
 			else if (amax <= alpha) {
 				x = amax;
 			}
 			else
-				x = -this.negaMax(gsChild, -beta, -alpha);
+				x = -this.negaMax(gsChild, depth + 1, -beta, -alpha);
 
 			if (x > alpha) {
 				alpha = x;

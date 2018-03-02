@@ -7,10 +7,10 @@ enum GameStatus {
 	WolfWon = 1
 }
 
+const NB_SHEEP = 5;
 
 class GameState {
 	//Const
-	private static NB_SHEEP = 5;
 
 	// Static Init
 	private static DictWolf: HashTable<number> = {};
@@ -509,37 +509,6 @@ class GameState {
 	public isGameOver(): boolean {
 		return this.status !== GameStatus.NotFinished;
 	}
-
-	//public static MakeAndCheck(nbMoves: number, wolf: Pos, sheep: Pos[]): GameState
-	//{
-	//	if (sheep.length !== GameState.NB_SHEEP)
-	//		throw "Invalid number of sheep!";
-
-	//	if (!wolf.isValid)
-	//		throw "Invalid starting state (invalid wolf position)";
-
-	//	for (let i = 0; i < sheep.length; ++i)
-	//	{
-	//		let p = sheep[i];
-
-	//		if (!p.isValid)
-	//			throw "Invalid starting state : invalid sheep position " + p.toString();
-
-	//		if (p === wolf)
-	//			throw "Invalid starting state : wolf at same position than Sheep " + p.toString();
-	//	}
-
-	//	sheep.sort((a: Pos, b: Pos) => { return a.pval - b.pval; });
-
-	//	for (let i = 0; i < this.NB_SHEEP - 1; ++i)
-	//		if (sheep[i] === sheep[i + 1])
-	//			throw "Invalid starting state : several sheep at same position " + sheep[i].toString();
-
-	//	let gs = new GameState(nbMoves, wolf, sheep);
-	//	gs.checkStatus();
-
-	//	return gs;
-	//}
 
 	private makeNewGameStateWolf(wolf: Pos): GameState {
 		return new GameState(this.nbMoves + 1, wolf, this.sheep);
