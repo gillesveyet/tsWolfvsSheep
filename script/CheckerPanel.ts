@@ -236,7 +236,8 @@ class CheckerPanel {
 	}
 
 	private isMoveValid(selected: Pos): boolean {
-		//console.log("isMoveValid 1 : selected:" + selected + " this.validMoves:" + this.validMoves);
+		//console.log(`isMoveValid  selected:${selected}  validMoves:${this.validMoves}`);
+
 
 		if (this.validMoves === null)
 			return false;
@@ -253,14 +254,14 @@ class CheckerPanel {
 		if (!this.isPlayEnabled)
 			return;
 
-		if (x >= 10 || y >= 10)
+		if (!Pos.isValid(x, y))
 			return;
 
 		let p = Pos.GetPos(x, y);
 
 		//console.log("canvas_MouseClick - x=" + x + " y=" + y + " p=" + p + " this.Selected=" + this.selectedPiece); // + " - onMovePiece: " + this.onMovePiece);
 
-		if ( !this.gameState.isWolf && this.isSheep(p))
+		if (!this.gameState.isWolf && this.isSheep(p))
 			this.updateSelected(p, true);
 		else if (this.selectedPiece !== null && this.isMoveValid(p) && this.onMovePiece)
 			this.onMovePiece(this.selectedPiece, p);

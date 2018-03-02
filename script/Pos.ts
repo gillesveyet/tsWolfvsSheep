@@ -42,6 +42,10 @@ class Pos {
 		return Pos._allPos[x][y];
 	}
 
+	static isValid(x: number, y: number): boolean {
+		return x >= 0 && x < 10 && y >= 0 && y < 10 && (x + y) % 2 !== 0;
+	}
+
 	x: number;
 	y: number;
 	pval: number;
@@ -59,11 +63,6 @@ class Pos {
 
 		this.pval = n;
 	}
-
-
-	// isValid(): boolean {
-	// 	return this.x >= 0 && this.x < 10 && this.y >= 0 && this.y < 10 && (this.x + this.y) % 2 !== 0;
-	// }
 
 	// compareTo(other: Pos) {
 	// 	return this.pval - other.pval;
