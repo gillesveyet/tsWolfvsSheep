@@ -581,6 +581,11 @@ class GameState {
 		return this.hasWolfPlayed ? this.score : -this.score;
 	}
 
+	get scoreForCompare(): number {
+		return this.score === undefined ? MIN_SCORE : this.score;
+	}
+
+
 	get status(): GameStatus {
 		if (this.score === MAX_SCORE)
 			return this.hasWolfPlayed ? GameStatus.WolfWon : GameStatus.SheepWon;

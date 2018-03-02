@@ -19,12 +19,9 @@
 // 3) no move possible :  score <  0  SHOULD NOT BE POSSIBLE.
 
 const MAX_SCORE = 1000;
-
+const MIN_SCORE = -MAX_SCORE;
 
 class Solver {
-	//Const
-	private static readonly MIN_VALUE = -999999;
-
 	// Static Init
 	private static DictSheep: HashTable<boolean> = {};
 
@@ -84,7 +81,7 @@ class Solver {
 
 		let startDate = new Date();
 
-		this.negaMax(gsParent, 0, Solver.MIN_VALUE, -Solver.MIN_VALUE);
+		this.negaMax(gsParent, 0, MIN_SCORE, MAX_SCORE);
 
 		let gs = null;
 
@@ -107,10 +104,6 @@ class Solver {
 	private negaMax(gsParent: GameState, depth: number, alpha: number, beta: number): number {
 		++this.nbIterations;
 
-		//Just to check, should never be true.
-		// if (alpha >= beta)
-		// 	console.warn(`alpha:${alpha}  beta:${beta}`);	
-
 		let states = gsParent.play();
 
 		if (depth === 0)
@@ -131,7 +124,7 @@ class Solver {
 				return gsChild.score = 800 + depth;
 		}
 
-		let max = Solver.MIN_VALUE;
+		let max = MIN_SCORE;
 		let smax = MAX_SCORE - depth;
 
 		for (let gsChild of states) {
