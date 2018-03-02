@@ -497,6 +497,11 @@ class GameState {
 	sheep: Pos[];
 	score: number;
 
+	children: GameState[];	// only at depth=0
+
+	get hasWolfPlayed(): boolean {
+		return !this.isWolf;
+	}
 
 	constructor(nbMoves: number, wolf: Pos, sheep: Pos[]) {
 		this.nbMoves = nbMoves;
@@ -556,28 +561,29 @@ class GameState {
 			gs = this.makeNewGameStateSheep(oldp, newp);
 
 			let states = gs.play();
-			gs.score = states.length === 0 ? -MAX_SCORE : 0;		// Sheep win (wolf is blocked)
+			gs.score = states.length === 0 ? MAX_SCORE : 0;		// Sheep win (wolf is blocked)
 		}
 
-		console.log(`${gs.nbMoves.toString().padStart(2)}: ${gs.getPlayerId(false)} Score:${gs.score.toString().padStart(5)} Wolf:${gs.wolf} Sheep:${gs.sheep}`);
+		console.log(`${gs.nbMoves.toString().padStart(2)}: ${gs.getPlayerId(false)} Score:${gs.trueScore.toString().padStart(5)} Wolf:${gs.wolf} Sheep:${gs.sheep}`);
 
 		return gs;
 	}
 
 	getPlayerId(cpu: boolean) {
-		return `${cpu ? "CPU" : this.playerNumber}:${!this.isWolf ? "W" : "S"}`.padEnd(5);	// invert isWolf because we consider who has played (not who is going to play).
+		return `${cpu ? "CPU" : this.playerNumber}:${this.hasWolfPlayed ? "W" : "S"}`.padEnd(5);
 	}
 
 	get playerNumber() {
 		return _game.playerMode === PlayerMode.TwoPlayers ? "P" + (this.nbMoves % 2 ? 1 : 2) : "P";
 	}
 
+	get trueScore(): number {
+		return this.hasWolfPlayed ? this.score : -this.score;
+	}
 
 	get status(): GameStatus {
 		if (this.score === MAX_SCORE)
-			return GameStatus.WolfWon;
-		else if (this.score === -MAX_SCORE)
-			return GameStatus.SheepWon
+			return this.hasWolfPlayed ? GameStatus.WolfWon : GameStatus.SheepWon;
 		else
 			return GameStatus.NotFinished;
 	}

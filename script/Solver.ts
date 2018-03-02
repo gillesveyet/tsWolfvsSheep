@@ -23,7 +23,7 @@ const MAX_SCORE = 1000;
 
 class Solver {
 	//Const
-	private static MIN_VALUE = -999999;
+	private static readonly MIN_VALUE = -999999;
 
 	// Static Init
 	private static DictSheep: HashTable<boolean> = {};
@@ -83,32 +83,25 @@ class Solver {
 		this.nbIterations = 0;
 
 		let startDate = new Date();
+
+		this.negaMax(gsParent, 0, Solver.MIN_VALUE, -Solver.MIN_VALUE);
+
 		let gs = null;
-		let score = Solver.MIN_VALUE;
-		let wolfTurn = gsParent.isWolf;	// true if wolf plays this turn
 
+		for (let gsChild of gsParent.children) {
+			let val = gsChild.score;
 
-		for (let gsChild of gsParent.play()) {
-			if (wolfTurn && gsChild.wolfHasWon) {
-				score = MAX_SCORE
-				gs = gsChild;
-				break;
-			}
-
-			let val = -this.negaMax(gsChild, 0, Solver.MIN_VALUE, -score);
-			if (val > score) {
-				score = val;
+			if (val !== undefined && (!gs || val > gs.score)) {
 				gs = gsChild;
 			}
 		}
 
-		this.score = gs.score = gsParent.isWolf ? score : -score;	// transform negamax to normal score
+		this.score = gs.trueScore;
 		this.elapsed = new Date().getTime() - startDate.getTime();
-		this.statusString = `${gs.nbMoves.toString().padStart(2)}: ${gs.getPlayerId(true)} Score:${gs.score.toString().padStart(5)} Wolf:${gs.wolf} Sheep:${gs.sheep} Nb:${this.nbIterations} Time:${this.elapsed}`;
+		this.statusString = `${gs.nbMoves.toString().padStart(2)}: ${gs.getPlayerId(true)} Score:${gs.trueScore.toString().padStart(5)} Wolf:${gs.wolf} Sheep:${gs.sheep} Nb:${this.nbIterations} Time:${this.elapsed}`;
 
 		return gs;
 	}
-
 
 
 	private negaMax(gsParent: GameState, depth: number, alpha: number, beta: number): number {
@@ -120,19 +113,22 @@ class Solver {
 
 		let states = gsParent.play();
 
+		if (depth === 0)
+			gsParent.children = states;
+
 		if (states.length === 0)
-			return -MAX_SCORE + depth;
+			return -MAX_SCORE + depth - 1;	// substract -1 because sheep has won on previous move (wold is blocked).
 
 		let wolfTurn = gsParent.isWolf;	// true if wolf plays this turn
 
 		for (let gsChild of states) {
 			if (wolfTurn) {
 				if (gsChild.wolfHasWon)			// wolf play and win
-					return MAX_SCORE - depth;		// 		=> if depth = 0 : perfect score
+					return gsChild.score = MAX_SCORE - depth;		// 		=> if depth = 0 : perfect score
 				else if (gsChild.wolfWillWin)		// wolf will win
-					return MAX_SCORE - depth - gsChild.deltaWolfToLowestSheep;
+					return gsChild.score = MAX_SCORE - depth - gsChild.deltaWolfToLowestSheep;
 			} else if (Solver.DictSheep[gsChild.getHashSheep()])	// sheep : perfect move
-				return 800 + gsChild.nbMoves;
+				return gsChild.score = 800 + depth;
 		}
 
 		let max = Solver.MIN_VALUE;
@@ -149,6 +145,8 @@ class Solver {
 				x = smax;
 			else
 				x = -this.negaMax(gsChild, depth + 1, -beta, -alpha);
+
+			gsChild.score = x;
 
 			if (x > alpha) {
 				alpha = x;
