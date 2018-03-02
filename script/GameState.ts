@@ -783,4 +783,10 @@ class GameState {
 	public getHashSheep(): number {
 		return this.sheep[0].pval | this.sheep[1].pval << 6 | this.sheep[2].pval << 12 | this.sheep[3].pval << 18 | this.sheep[4].pval << 24;
 	}
+
+	public getHash(): number {
+		//hash is greater than 2^32 but should be ok as numbers are accurate up to 15 digits (IEEE 754 mantissa is 52 bits).
+		return (this.sheep[0].pval + 50) * (this.sheep[1].pval + 50) * (this.sheep[2].pval + 50) * (this.sheep[3].pval + 50) * (this.sheep[4].pval + 50) * 50 + this.wolf.pval;
+	}
+
 }

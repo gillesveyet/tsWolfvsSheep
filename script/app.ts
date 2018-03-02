@@ -26,7 +26,7 @@ enum PlayerMode {
     TwoPlayers = 3, // not yet implemented
 }
 
-const DEFAULT_DEPTH = 16;
+const DEFAULT_DEPTH = 17;
 
 class Game {
     checker: CheckerPanel;
