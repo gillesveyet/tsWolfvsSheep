@@ -132,7 +132,7 @@ class Solver {
 				else if (gsChild.wolfWillWin)		// wolf will win
 					return MAX_SCORE - depth - gsChild.deltaWolfToLowestSheep;
 			} else if (Solver.DictSheep[gsChild.getHashSheep()])	// sheep : perfect move
-				return 100 + depth;
+				return 800 + gsChild.nbMoves;
 		}
 
 		let max = Solver.MIN_VALUE;
