@@ -118,7 +118,7 @@ class Solver {
 			if (wolfTurn) {
 				if (gsChild.wolfHasWon)			// wolf play and win
 					return gsChild.score = MAX_SCORE - depth;		// 		=> if depth = 0 : perfect score
-				else if (gsChild.wolfWillWin)		// wolf will win
+				else if (gsChild.wolfWillWin)
 					return gsChild.score = MAX_SCORE - depth - gsChild.deltaWolfToLowestSheep;
 			} else if (Solver.DictSheep[gsChild.getHashSheep()])	// sheep : perfect move
 				return gsChild.score = 800 + depth;
@@ -129,9 +129,10 @@ class Solver {
 
 		for (let gsChild of states) {
 			let x: number;
-
-			if (!wolfTurn && gsChild.wolfHasWon)			// optimization: wolfTurn already been checked so only check if sheep turn
-				x = -MAX_SCORE + depth + 1;					// sheep bad move, wolf win on next turn.
+			if (!wolfTurn && gsChild.wolfHasWon)
+				x = -MAX_SCORE + depth + 1;									// sheep bad move, wolf win on next turn.
+			else if (!wolfTurn && gsChild.wolfWillWin)
+				x = -MAX_SCORE + depth + gsChild.deltaWolfToLowestSheep;	//sheep has played but wolf will win soon.
 			else if (depth === this.maxDepth)
 				x = 0;
 			else if (smax <= alpha)
