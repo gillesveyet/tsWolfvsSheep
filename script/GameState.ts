@@ -789,4 +789,30 @@ class GameState {
 		return (this.sheep[0].pval + 50) * (this.sheep[1].pval + 50) * (this.sheep[2].pval + 50) * (this.sheep[3].pval + 50) * (this.sheep[4].pval + 50) * 50 + this.wolf.pval;
 	}
 
+
+	// // Compute hash as bit field, seems to be a little faster than original getHash
+	// //  
+	// //   6 : Wolf position  (0 .. 49)
+	// //   6 : Sheep Lowest   (0 .. 49) 
+	// //
+	// // For each remaining sheep (x 4)
+	// //   5 : offset to previous sheep - 1 (offset cannot be 0 so we can substract 1)
+	// public getHash2(): number {
+	// 	let W = this.wolf.pval;
+	// 	let S0 = this.sheep[0].pval;
+	// 	let S1 = this.sheep[1].pval;
+	// 	let S2 = this.sheep[2].pval;
+	// 	let S3 = this.sheep[3].pval;
+	// 	let S4 = this.sheep[4].pval;
+
+	// 	let d0 = S1 - S0 - 1;
+	// 	let d1 = S2 - S1 - 1;
+	// 	let d2 = S3 - S2 - 1;
+	// 	let d3 = S4 - S3 - 1;
+
+	// 	if( d0 > 32 || d1 > 32 || d2 > 32 || d3 > 32)
+	// 		return 0;	// overflow, hash no unique, do not use.
+
+	// 	return W << 26 | S0 << 20 | d0 << 15 | d1 << 10 | d2 << 5 | d3;
+	// }
 }

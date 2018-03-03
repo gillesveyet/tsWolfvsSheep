@@ -120,18 +120,26 @@ class Solver {
 		let wolfTurn = gsParent.isWolf;	// true if wolf plays this turn
 
 		for (let gsChild of states) {
+			let score = undefined;
+
 			if (wolfTurn) {
 				if (gsChild.wolfHasWon)			// wolf play and win
-					return gsChild.score = MAX_SCORE - depth;		// 		=> if depth = 0 : perfect score
+					score = MAX_SCORE - depth;		// 		=> if depth = 0 : perfect score
 				else if (gsChild.wolfWillWin)
-					return gsChild.score = MAX_SCORE - depth - gsChild.deltaWolfToLowestSheep;
-			} else if (Solver.dictSheep[gsChild.getHashSheep()])	// sheep : perfect move
-				return gsChild.score = 800 + depth;
+					score = MAX_SCORE - depth - gsChild.deltaWolfToLowestSheep;
+			}
+			else if (Solver.dictSheep[gsChild.getHashSheep()])	// sheep : perfect move
+				score = 800 + depth;
+
+			if (score !== undefined) {
+				this.dictTmp[gsParent.getHash()] = -score;	//negate the score before store so it is not necessary to do this after retrieving from dictionary
+				return gsChild.score = score;
+			}
 		}
 
 		let max = MIN_SCORE;
 		let smax = MAX_SCORE - depth;
-		let okPrune = depth < this.pruneDepth;	//  OK to prune when depth === pruneDepth because nothing is stored in dictionary if tree is pruned
+		let okPrune = depth < this.pruneDepth;
 		let okDict = depth >= this.pruneDepth;
 
 
@@ -145,7 +153,7 @@ class Solver {
 				x = 0;
 			else if (smax <= alpha)
 				x = smax;
-			else if (okDict && (x = this.dictTmp[gsChild.getHash()]) !== undefined) {
+			else if ((x = this.dictTmp[gsChild.getHash()]) !== undefined) {
 				//use x from dictionary
 			} else
 				x = -this.negaMax(gsChild, depth + 1, -beta, -alpha);
