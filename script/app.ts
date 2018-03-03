@@ -34,6 +34,11 @@ class Game {
     ready = false;
     playerMode: PlayerMode;
 
+
+    get isTwoPlayerMode(): boolean {
+        return this.playerMode === PlayerMode.TwoPlayers;
+    }
+
     getWolfDepth(): number {
         let d = parseInt((<HTMLInputElement>document.getElementById("wolf_depth")).value);
 
@@ -54,6 +59,11 @@ class Game {
 
     getGS(): GameState {
         return this.gameHistory.length > 0 ? this.gameHistory[this.gameHistory.length - 1] : null;
+    }
+
+    get isGameOver(): boolean {
+        let gs = this.getGS();
+        return gs && gs.isGameOver;
     }
 
     addGS(gs: GameState) {
@@ -114,22 +124,22 @@ class Game {
         });
 
         window.onkeydown = (ev: KeyboardEvent) => {
-            if (ev.keyCode === 32 && this.ready && IsExpertMode) {
+            let gs = this.getGS();
+            if (ev.keyCode === 32 && this.ready && IsExpertMode && gs && !gs.isGameOver) {
                 ev.preventDefault();
 
                 this.ready = false;
                 this.displayStatus("Thinking...");
 
-                this.cpuPlay(false);
+                setTimeout(() => {
+                    this.cpuPlay(this.isTwoPlayerMode);
 
-                if (!this.getGS().isGameOver()) {
-                    setTimeout(() => {
+                    if (!this.isTwoPlayerMode && !this.isGameOver) {
                         this.cpuPlay(true);
-                        this.ready = true;
-                    }, 200);
-                }
+                    }
 
-
+                    this.ready = true;
+                }, 200);
             }
         };
 
@@ -144,14 +154,14 @@ class Game {
         };
 
         document.getElementById('game_new').onclick = () => {
-            if (this.getGS() != null && !this.getGS().isGameOver() && !confirm("Cancel current game and start a new game?"))
+            if (!this.isGameOver && !confirm("Cancel current game and start a new game?"))
                 return;
 
             this.resetGame();
         };
 
         document.getElementById('game_back').onclick = () => {
-            if (this.playerMode === PlayerMode.TwoPlayers) {
+            if (this.isTwoPlayerMode) {
                 this.gameHistory.pop();
             }
             else {
@@ -176,6 +186,11 @@ class Game {
             this.startGame();
         });
 
+        $("#play_2_players").click(() => {
+            this.playerMode = PlayerMode.TwoPlayers
+            this.startGame();
+        });
+
         this.checker = new CheckerPanel(<HTMLCanvasElement>document.getElementById('can'));
 
         this.checker.onGetValidMoves = (selected: Pos) => {
@@ -189,10 +204,10 @@ class Game {
         this.checker.onMovePiece = (oldPos: Pos, newPos: Pos) => {
             let gs = this.getGS().makePlayerMove(oldPos, newPos);
             this.addGS(gs);
-            this.checker.SetPositions(gs, false);
+            this.checker.SetPositions(gs, this.isTwoPlayerMode && !gs.isGameOver);
 
             this.updateContext();
-            if (!gs.isGameOver())
+            if (!gs.isGameOver && !this.isTwoPlayerMode)
                 this.makeCpuPlay();
         }
 
@@ -218,22 +233,22 @@ class Game {
 
         this.displayInfo(gs);
 
-        let allow = this.gameHistory.length > 2 || this.playerMode === PlayerMode.TwoPlayers && this.gameHistory.length > 1;
+        let allow = this.gameHistory.length > 2 || this.isTwoPlayerMode && this.gameHistory.length > 1;
 
-        (<HTMLInputElement>document.getElementById("game_back")).disabled = !(allow && (this.playerMode !== PlayerMode.TwoPlayers || IsExpertMode));
+        (<HTMLInputElement>document.getElementById("game_back")).disabled = !(allow && (!this.isTwoPlayerMode || IsExpertMode));
 
     }
 
     displayInfo(gs: GameState): void {
         if (gs == null)
-            this.displayStatus("Select Wolf or Sheep");
-        else if (gs.isGameOver())
+            this.displayStatus("Select mode");
+        else if (gs.isGameOver)
             this.showVictory(gs);
         else {
             if (gs.isWolf)
-                this.displayStatus("Your turn");
+                this.displayStatus("Wolf turn: move wolf.");
             else
-                this.displayStatus("Your turn. Select a sheep (white) to play.");
+                this.displayStatus("Sheep turn: select a sheep (white) to play.");
         }
     }
 
@@ -241,22 +256,20 @@ class Game {
     showVictory(gs: GameState): void {
         let msg: string;
 
-        if (this.playerMode !== PlayerMode.TwoPlayers) {
+        if (this.isTwoPlayerMode) {
+            if (gs.status === GameStatus.SheepWon)
+                msg = "Sheep win!";
+            else
+                msg = "Wolf wins!";
+        } else {
             if ((gs.status === GameStatus.WolfWon) === (this.playerMode === PlayerMode.PlayWolf))
                 msg = "You win!";
             else
                 msg = "You lose!";
         }
-        else {
-            if (gs.status === GameStatus.SheepWon)
-                msg = "Sheep win!";
-            else
-                msg = "Wolf wins!";
-        }
 
         this.displayStatus(msg);
         setTimeout(() => alert(msg), 600);
-
     }
 
     cpuPlay(enable: boolean) {
@@ -265,7 +278,7 @@ class Game {
         this.addGS(gs);
 
         this.displayDebug(solver.statusString);
-        this.checker.SetPositions(gs, enable && !gs.isGameOver());
+        this.checker.SetPositions(gs, enable && !gs.isGameOver);
 
         this.updateContext();
     }
@@ -283,13 +296,8 @@ class Game {
     }
 }
 
-//Does not work. Problem with 'this' ?   Use bind ?
-//$(new Game().run);
-
-//OK
+//Can also use JQuery (same effect as window.onload) 
 //$(() => { new Game().run() });
-
-//OK
 
 let _game: Game;
 

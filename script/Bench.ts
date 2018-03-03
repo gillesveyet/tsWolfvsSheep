@@ -29,7 +29,7 @@ class Bench
 
 		let gs = GameState.GetInitialGameState();
 
-		for (; !gs.isGameOver() ;)
+		for (; !gs.isGameOver ;)
 		{
 			solver = new Solver();
 

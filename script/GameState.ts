@@ -510,7 +510,7 @@ class GameState {
 		this.sheep = sheep;
 	}
 
-	public isGameOver(): boolean {
+	get isGameOver(): boolean {
 		return this.status !== GameStatus.NotFinished;
 	}
 
@@ -574,7 +574,7 @@ class GameState {
 	}
 
 	get playerNumber() {
-		return _game.playerMode === PlayerMode.TwoPlayers ? "P" + (this.nbMoves % 2 ? 1 : 2) : "P";
+		return _game.isTwoPlayerMode ? "P" + (this.nbMoves % 2 ? 1 : 2) : "P";
 	}
 
 	get trueScore(): number {
