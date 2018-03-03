@@ -52,6 +52,6 @@ class Bench
 		if( !win)
 			win = window.open("", "Benchmark");
 
-		win.document.write("<p>" + res +" </p>");
+		win.document.write(`<p style="font-family:Courier New;">` + res + `</p>`);
 	}
 }
