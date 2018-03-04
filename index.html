@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Wolf and Sheep</title>
     <meta charset="utf-8">
@@ -9,39 +10,48 @@
     <link rel="shortcut icon" href="media/favicon32x32.ico">
     <link rel="stylesheet" href="css/app.css" type="text/css">
 </head>
+
 <body>
-<div class="container">
-    <h2>Wolf and Sheep</h2>
+    <div class="container">
+        <h2>Wolf and Sheep</h2>
 
-    <div class="menu">
-        <div id="menu_play">
-            <button id="play_sheep">Play Sheep vs CPU</button>
-            <button id="play_wolf">Play Wolf vs CPU</button>
-            <button id="play_2_players">2 Players</button>
+        <div class="menu">
+            <div id="menu_play">
+                <button id="play_sheep">Play Sheep vs CPU</button>
+                <button id="play_wolf">Play Wolf vs CPU</button>
+                <button id="play_2_players">2 Players</button>
+            </div>
+
+            <div id="menu_game">
+                <button id="game_back">Move Back</button>
+                <button id="game_new">New Game</button>
+            </div>
         </div>
 
-        <div id="menu_game">
-            <button id="game_back">Move Back</button>
-            <button id="game_new">New Game</button>
+        <div class="menu">
+            <div id="menu_depth">
+                <div>
+                    <label for="wolf_depth">Wolf Depth:</label>
+                    <input type="text" id="wolf_depth">
+                </div>
+                <div>
+                    <label for="sheep_depth">Sheep Depth:</label>
+                    <input type="text" id="sheep_depth">
+                </div>
+            </div>
+            <div id="menu_bench">
+                <!-- <button id="test">Test</button> -->
+                <button id="bench">Benchmark</button>
+            </div>
         </div>
 
-        <div id="menu_depth">
-            <div>Wolf Depth: <input type="text" id="wolf_depth"></div>
-            <div>Sheep Depth: <input type="text" id="sheep_depth"></div>
-        </div>
-        <div id="menu_bench">
-            <!-- <button id="test">Test</button> -->
-            <button id="bench">Benchmark</button>
-        </div>
+        <canvas id="can" width="600" height="600"></canvas>
+        <div id="status"></div>
+        <div id="dbg"></div>
     </div>
 
-
-    <canvas id="can" width="600" height="600"></canvas>
-    <div id="status"></div>
-    <div id="dbg"></div>
-</div>
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="js/script.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="js/script.js"></script>
 </body>
+
 </html>

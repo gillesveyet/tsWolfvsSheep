@@ -34,12 +34,16 @@ body {
     flex-direction: row;
 }
 
-.menu > div {
+.menu div {
     display: flex;
 }
 
 #menu_depth {
     flex-direction: column;
+}
+
+#menu_depth input{
+    width: 30px;
 }
 
 #menu_bench, #menu_depth, #dbg {
