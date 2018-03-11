@@ -85,6 +85,7 @@ class Game {
         $("#menu_autoplay").hide();
 
         this.updateContext();
+        this.displayInfo();
     }
 
     displayStatus(msg: string) {
@@ -94,7 +95,9 @@ class Game {
 
     displayDebug(msg: string) {
         //document.getElementById("dbg").innerText = msg; // not working with Firefox
-        $("#dbg").text(msg);
+        if (IsExpertMode)
+            $("#dbg").text(msg);
+
         console.log(msg);
     }
 
@@ -130,7 +133,7 @@ class Game {
 
         window.onkeydown = (ev: KeyboardEvent) => {
             let gs = this.getGS();
-            if (ev.keyCode === 32 && this.ready && IsExpertMode && gs && !gs.isGameOver) {
+            if (ev.keyCode === 32 && this.ready && IsExpertMode  && gs && !gs.isGameOver) {
                 ev.preventDefault();
 
                 this.ready = false;
@@ -175,10 +178,10 @@ class Game {
                 this.gameHistory.pop();
             }
 
-
             this.checker.SetPositions(this.getGS(), true);
 
             this.updateContext();
+            this.displayInfo();
         };
 
         $("#autoplay").click(() => {
@@ -226,6 +229,8 @@ class Game {
             this.checker.SetPositions(gs, this.isTwoPlayerMode && !gs.isGameOver);
 
             this.updateContext();
+            this.displayInfo();
+
             if (!gs.isGameOver && !this.isTwoPlayerMode)
                 this.makeCpuPlay();
         }
@@ -252,6 +257,7 @@ class Game {
                 this.ready = true;
                 this.playerMode = PlayerMode.TwoPlayers;
                 $("#menu_autoplay").hide();
+                $("#menu_game").show();
                 this.updateContext();
             }
 
@@ -278,7 +284,6 @@ class Game {
     autoplayStop() {
         console.log('autoplayStop');
         this.playerMode = PlayerMode.TwoPlayers;
-        this.updateContext();
     }
 
 
@@ -288,7 +293,6 @@ class Game {
 
         $("#autoplay_stop").show();
         $("#autoplay_resume").hide();
-
         $("#menu_game").hide();
 
         this.updateContext();
@@ -297,22 +301,33 @@ class Game {
 
 
     startGame(): void {
+        let gameBack = true;
+
         if (this.isAutoplayMode) {
             $("#autoplay_stop").show();
             $("#autoplay_resume").hide();
 
             $("#menu_autoplay").show();
+
+            if (IsExpertMode)
+                $("#game_back").show();
+            else
+                $("#game_back").hide();
+
         }
-        else
+        else {
+            $("#game_back").show();
             $("#menu_game").show();
+        }
 
         $("#menu_play").hide();
 
         let gs = GameState.GetInitialGameState()
         this.addGS(gs);
 
-        this.checker.SetPositions(gs, this.playerMode === PlayerMode.PlaySheep || this.isTwoPlayerMode);
+        this.checker.SetPositions(gs, this.playerMode === PlayerMode.PlayWolf || this.isTwoPlayerMode);
         this.updateContext();
+        this.displayInfo();
 
         switch (this.playerMode) {
             case PlayerMode.PlaySheep:
@@ -325,16 +340,13 @@ class Game {
     }
 
     updateContext(): void {
-        let gs = this.getGS();
-
-        this.displayInfo(gs);
-
         let allow = this.gameHistory.length > 2 || this.isTwoPlayerMode && this.gameHistory.length > 1;
-
-        (<HTMLInputElement>document.getElementById("game_back")).disabled = !(allow && (!this.isTwoPlayerMode || IsExpertMode));
+        (<HTMLInputElement>document.getElementById("game_back")).disabled = !allow;
     }
 
-    displayInfo(gs: GameState): void {
+    displayInfo(): void {
+        let gs = this.getGS();
+
         if (gs == null)
             this.displayStatus("Select mode");
         else if (gs.isGameOver)
@@ -376,6 +388,7 @@ class Game {
         this.checker.SetPositions(gs, enable && !gs.isGameOver);
 
         this.updateContext();
+        this.displayInfo();
     }
 
 
