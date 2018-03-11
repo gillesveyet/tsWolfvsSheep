@@ -114,9 +114,7 @@ class Game {
         }
 
         if (IsExpertMode) {
-            $("#menu_bench").show();
-            $("#menu_depth").show();
-            $("#dbg").show();
+            $("#menu_expert").css("display", "flex");
         }
 
         $("#test").click(() => {

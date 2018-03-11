@@ -32,20 +32,27 @@ body {
 .menu {
     display: flex;
     flex-direction: row;
+    padding: 3px 0;
 }
 
-.menu div {
+#menu_play, #menu_expert {
+    display: none;
+}
+
+#menu_expert div {
     display: flex;
 }
 
 #menu_depth {
+    display: flex;
     flex-direction: column;
 }
 
-#menu_depth input{
-    width: 30px;
+#menu_depth input {
+    width: 50px;
 }
 
-#menu_bench, #menu_depth, #dbg {
-    display: none;
+#menu_depth label {
+    flex: 1;
+    padding-right: 10px;
 }
