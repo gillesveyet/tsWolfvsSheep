@@ -23,7 +23,8 @@
 enum PlayerMode {
     PlayWolf = 1,
     PlaySheep = 2,
-    TwoPlayers = 3, // not yet implemented
+    TwoPlayers = 3,
+    Autoplay = 4
 }
 
 const DEFAULT_DEPTH = 17;
@@ -37,6 +38,10 @@ class Game {
 
     get isTwoPlayerMode(): boolean {
         return this.playerMode === PlayerMode.TwoPlayers;
+    }
+
+    get isAutoplayMode(): boolean {
+        return this.playerMode === PlayerMode.Autoplay;
     }
 
     getWolfDepth(): number {
@@ -75,8 +80,9 @@ class Game {
         this.checker.SetPositions(null, false);
         this.ready = true;
 
-        $("#menu_game").hide();
         $("#menu_play").show();
+        $("#menu_game").hide();
+        $("#menu_autoplay").hide();
 
         this.updateContext();
     }
@@ -176,9 +182,17 @@ class Game {
         };
 
         $("#autoplay").click(() => {
-            let gs = this.getGS();
-            if (gs && !gs.isGameOver)
-                this.autoplay();
+            this.playerMode = PlayerMode.Autoplay;
+            this.startGame();
+        });
+
+
+        $("#autoplay_stop").click(() => {
+            this.autoplayStop();
+        });
+
+        $("#autoplay_resume").click(() => {
+            this.autoplayResume();
         });
 
         $("#play_wolf").click(() => {
@@ -220,32 +234,94 @@ class Game {
     }
 
     autoplay() {
+        if (this.checkAutoplayStop())
+            return;
+
         this.ready = false;
         this.displayStatus("Auto Play...");
 
         setTimeout(() => {
+            if (this.checkAutoplayStop())
+                return;
+
             this.cpuPlay(this.isGameOver);
-            this.ready = true;
 
             if (!this.isGameOver) {
                 this.autoplay();
+            } else {
+                this.ready = true;
+                this.playerMode = PlayerMode.TwoPlayers;
+                $("#menu_autoplay").hide();
+                this.updateContext();
             }
+
         }, 200);
+    }
+
+    checkAutoplayStop(): boolean {
+        if (!this.isAutoplayMode) {
+            console.log('checkAutoplayStop: true');
+            $("#autoplay_stop").hide();
+            $("#autoplay_resume").show();
+
+            $("#menu_game").show();
+
+            this.ready = true;
+            this.updateContext();
+            return true;
+        }
+        else
+            return false;
+    }
+
+
+    autoplayStop() {
+        console.log('autoplayStop');
+        this.playerMode = PlayerMode.TwoPlayers;
+        this.updateContext();
+    }
+
+
+    autoplayResume() {
+        console.log('autoplayResume');
+        this.playerMode = PlayerMode.Autoplay;
+
+        $("#autoplay_stop").show();
+        $("#autoplay_resume").hide();
+
+        $("#menu_game").hide();
+
+        this.updateContext();
+        this.autoplay();
     }
 
 
     startGame(): void {
-        $("#menu_game").show();
+        if (this.isAutoplayMode) {
+            $("#autoplay_stop").show();
+            $("#autoplay_resume").hide();
+
+            $("#menu_autoplay").show();
+        }
+        else
+            $("#menu_game").show();
+
         $("#menu_play").hide();
 
         let gs = GameState.GetInitialGameState()
         this.addGS(gs);
 
-        this.checker.SetPositions(gs, this.playerMode !== PlayerMode.PlaySheep);
+        this.checker.SetPositions(gs, this.playerMode === PlayerMode.PlaySheep || this.isTwoPlayerMode);
         this.updateContext();
 
-        if (this.playerMode === PlayerMode.PlaySheep)
-            this.makeCpuPlay();
+        switch (this.playerMode) {
+            case PlayerMode.PlaySheep:
+                this.makeCpuPlay();
+                break;
+            case PlayerMode.Autoplay:
+                this.autoplay();
+                break;
+        }
     }
 
     updateContext(): void {
@@ -256,9 +332,6 @@ class Game {
         let allow = this.gameHistory.length > 2 || this.isTwoPlayerMode && this.gameHistory.length > 1;
 
         (<HTMLInputElement>document.getElementById("game_back")).disabled = !(allow && (!this.isTwoPlayerMode || IsExpertMode));
-
-        if (IsExpertMode)
-            (<HTMLInputElement>document.getElementById("autoplay")).disabled = !gs;
     }
 
     displayInfo(gs: GameState): void {
@@ -278,7 +351,7 @@ class Game {
     showVictory(gs: GameState): void {
         let msg: string;
 
-        if (this.isTwoPlayerMode) {
+        if (this.isTwoPlayerMode || this.isAutoplayMode) {
             if (gs.status === GameStatus.SheepWon)
                 msg = "Sheep win!";
             else

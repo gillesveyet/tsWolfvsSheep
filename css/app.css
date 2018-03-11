@@ -35,7 +35,7 @@ body {
     padding: 3px 0;
 }
 
-#menu_play, #menu_expert {
+#menu_play, #menu_expert, #menu_autoplay {
     display: none;
 }
 
