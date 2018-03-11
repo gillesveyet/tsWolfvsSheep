@@ -77,6 +77,7 @@ class Game {
 
         $("#menu_game").hide();
         $("#menu_play").show();
+
         this.updateContext();
     }
 
@@ -174,6 +175,12 @@ class Game {
             this.updateContext();
         };
 
+        $("#autoplay").click(() => {
+            let gs = this.getGS();
+            if (gs && !gs.isGameOver)
+                this.autoplay();
+        });
+
         $("#play_wolf").click(() => {
             this.playerMode = PlayerMode.PlayWolf;
             this.startGame();
@@ -212,6 +219,21 @@ class Game {
         this.checker.preloadAssets();
     }
 
+    autoplay() {
+        this.ready = false;
+        this.displayStatus("Auto Play...");
+
+        setTimeout(() => {
+            this.cpuPlay(this.isGameOver);
+            this.ready = true;
+
+            if (!this.isGameOver) {
+                this.autoplay();
+            }
+        }, 200);
+    }
+
+
     startGame(): void {
         $("#menu_game").show();
         $("#menu_play").hide();
@@ -235,6 +257,8 @@ class Game {
 
         (<HTMLInputElement>document.getElementById("game_back")).disabled = !(allow && (!this.isTwoPlayerMode || IsExpertMode));
 
+        if (IsExpertMode)
+            (<HTMLInputElement>document.getElementById("autoplay")).disabled = !gs;
     }
 
     displayInfo(gs: GameState): void {
